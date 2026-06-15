@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trip Generator Pipeline — Interview Reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f8f9fc; --bg2: #ffffff; --bg3: #f0f2f7;
+  --border: #e2e5ef; --border2: #d0d4e3;
+  --text: #1a1d2e; --text2: #2e3454; --text3: #8a90a8;
+  --teal: #0d9488; --teal-dim: #e6faf8; --teal-border: #99e6de;
+  --amber: #b45309; --amber-dim: #fffbeb; --amber-border: #fcd34d;
+  --blue: #1d4ed8; --blue-dim: #eff6ff; --blue-border: #93c5fd;
+  --purple: #7c3aed; --purple-dim: #f5f3ff; --purple-border: #c4b5fd;
+  --red: #dc2626; --red-dim: #fef2f2;
+  --green: #16a34a; --green-dim: #f0fdf4;
+  --mono: 'IBM Plex Mono', monospace; --sans: 'IBM Plex Sans', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 15px; line-height: 1.6; min-height: 100vh; }
+.page { max-width: 900px; margin: 0 auto; padding: 32px 24px 60px; }
+.header { border-bottom: 1px solid var(--border2); padding-bottom: 20px; margin-bottom: 24px; }
+.header-top { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; }
+.project { font-family: var(--mono); font-size: 11px; color: var(--teal); letter-spacing: .1em; margin-bottom: 6px; }
+h1 { font-size: 22px; font-weight: 600; letter-spacing: -.02em; }
+.hsub { font-size: 13px; color: var(--text2); margin-top: 3px; }
+.badges { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-start; margin-top: 4px; }
+.badge { font-family: var(--mono); font-size: 11px; padding: 4px 10px; border-radius: 4px; border: 1px solid; }
+.badge-teal   { color: var(--teal);   border-color: var(--teal-border);   background: var(--teal-dim); }
+.badge-amber  { color: var(--amber);  border-color: var(--amber-border);  background: var(--amber-dim); }
+.badge-blue   { color: var(--blue);   border-color: var(--blue-border);   background: var(--blue-dim); }
+.badge-purple { color: var(--purple); border-color: var(--purple-border); background: var(--purple-dim); }
+.tabs { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.tab { font-family: var(--mono); font-size: 12px; padding: 8px 16px; border: none; background: none; color: var(--text3); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .15s, border-color .15s; white-space: nowrap; }
+.tab:hover { color: var(--text2); }
+.tab.active { color: var(--teal); border-bottom-color: var(--teal); }
+.panel { display: none; } .panel.active { display: block; }
+.slabel { font-family: var(--mono); font-size: 11px; color: var(--text3); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 10px; margin-top: 20px; }
+.slabel:first-child { margin-top: 0; }
+.card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; margin-bottom: 12px; }
+.flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.flow-box { background: var(--bg3); border: 1px solid var(--border2); border-radius: 6px; padding: 10px 14px; min-width: 110px; }
+.flow-box .step { font-family: var(--mono); font-size: 10px; color: var(--text3); margin-bottom: 3px; }
+.flow-box .label { font-size: 13px; font-weight: 500; color: var(--text); }
+.flow-box .sub { font-family: var(--mono); font-size: 11px; color: var(--text2); margin-top: 2px; }
+.hl-teal   { border-color: var(--teal-border)   !important; background: var(--teal-dim)   !important; }
+.hl-blue   { border-color: var(--blue-border)   !important; background: var(--blue-dim)   !important; }
+.hl-green  { border-color: #86efac              !important; background: var(--green-dim)  !important; }
+.hl-purple { border-color: var(--purple-border) !important; background: var(--purple-dim) !important; }
+.hl-amber  { border-color: var(--amber-border)  !important; background: var(--amber-dim)  !important; }
+.arr { color: var(--text3); font-size: 16px; flex-shrink: 0; }
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+@media(max-width:620px){ .g2,.g3{ grid-template-columns:1fr; } }
+.kv { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+.kv:last-child { border-bottom: none; }
+.kv .k { color: var(--text2); font-family: var(--mono); font-size: 13px; font-weight:500; }
+.kv .v { font-weight: 500; color: var(--text); text-align: right; }
+.rule { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 12px; font-size: 13px; color: var(--text); }
+.rule:last-child { margin-bottom: 0; }
+.dot { width: 5px; height: 5px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+.dot-teal{background:var(--teal)} .dot-blue{background:var(--blue)}
+.dot-amber{background:var(--amber)} .dot-purple{background:var(--purple)} .dot-red{background:var(--red)}
+.rule .de { font-size: 11px; color: var(--text3); display: block; margin-top: 1px; }
+.rule .why { font-size: 11.5px; color: var(--text3); display: block; margin-top: 3px; font-style: italic; }
+.ba { display: grid; grid-template-columns: 1fr 24px 1fr; align-items: center; gap: 8px; margin: 10px 0; }
+.ba-box { border-radius: 6px; padding: 10px 12px; font-size: 12px; }
+.ba-before { background: var(--red-dim); border: 1px solid #fca5a5; color: var(--red); }
+.ba-after  { background: var(--green-dim); border: 1px solid #86efac; color: var(--green); }
+.ba-lbl { font-family: var(--mono); font-size: 10px; opacity: .7; margin-bottom: 2px; }
+.ba-val { font-weight: 500; }
+.ba-arr { color: var(--text3); text-align: center; }
+.opt-row { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 18px; }
+.opt-row:last-child { margin-bottom: 0; }
+.opt-icon { font-size: 20px; margin-top: 1px; width: 28px; flex-shrink: 0; text-align: center; }
+.opt-title { font-size: 14px; font-weight: 500; color: var(--text); }
+.opt-sub { font-family: var(--mono); font-size: 11px; color: var(--text3); margin-top: 2px; }
+.opt-note { font-size: 12.5px; color: var(--text2); margin-top: 6px; line-height: 1.6; }
+.metric { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; text-align: center; }
+.m-val { font-family: var(--mono); font-size: 20px; font-weight: 500; color: var(--teal); }
+.m-lbl { font-size: 11px; color: var(--text2); margin-top: 6px; }
+.m-lbl .de { color: var(--text3); font-size: 10px; display: block; }
+.quote { background: var(--bg3); border-left: 3px solid var(--teal); border-radius: 0 6px 6px 0; padding: 12px 16px; margin-bottom: 10px; font-size: 13.5px; color: var(--text2); font-style: italic; line-height: 1.7; }
+.info-box { background: var(--teal-dim); border: 1px solid var(--teal-border); border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; font-size: 12.5px; color: var(--text2); }
+.phase-badge { display: inline-block; font-family: var(--mono); font-size: 10px; padding: 2px 8px; border-radius: 99px; font-weight: 500; margin-bottom: 8px; }
+.pb-1 { background: var(--teal-dim); color: var(--teal); border: 1px solid var(--teal-border); }
+.pb-2 { background: var(--blue-dim); color: var(--blue); border: 1px solid var(--blue-border); }
+.score-box { background: var(--bg3); border-radius: 6px; padding: 10px 14px; font-family: var(--mono); font-size: 12px; color: var(--text2); margin: 8px 0; line-height: 1.8; }
+.score-box span { color: var(--teal); font-weight: 500; }
+code { font-family: var(--mono); font-size: 11px; background: rgba(0,0,0,.06); padding: 1px 5px; border-radius: 3px; }
+.footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--border); font-family: var(--mono); font-size: 11px; color: var(--text3); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+
+/* ── SIM BUTTON ── */
+.sim-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--mono); font-size: 11px;
+  padding: 5px 12px; border-radius: 5px; border: 1px solid;
+  cursor: pointer; margin-top: 10px;
+  transition: opacity .15s; user-select: none;
+}
+.sim-btn:hover { opacity: 0.72; }
+.sim-btn-teal   { color: var(--teal);   border-color: var(--teal-border);   background: var(--teal-dim); }
+.sim-btn-amber  { color: var(--amber);  border-color: var(--amber-border);  background: var(--amber-dim); }
+.sim-btn-purple { color: var(--purple); border-color: var(--purple-border); background: var(--purple-dim); }
+.sim-btn-neutral{ color: var(--text2);  border-color: var(--border2);       background: var(--bg3); }
+
+/* ── SIM PANEL ── */
+.sim-panel {
+  display: none; margin-top: 12px;
+  border-radius: 8px; overflow: hidden;
+  border: 1px solid var(--border2); background: var(--bg2);
+  animation: fadeIn .2s ease;
+}
+@keyframes fadeIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
+.sim-panel.open { display: block; }
+.sim-panel canvas { display: block; width: 100%; }
+.sim-toolbar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px; background: var(--bg3);
+  border-bottom: 1px solid var(--border); flex-wrap: wrap;
+}
+.sim-toolbar label { font-family: var(--mono); font-size: 11px; color: var(--text2); }
+.sim-legend { display: flex; gap: 14px; padding: 8px 14px; border-top: 1px solid var(--border); flex-wrap: wrap; }
+.sim-legend span { font-family: var(--mono); font-size: 10px; color: var(--text2); display: flex; align-items: center; gap: 5px; }
+.leg-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.sim-caption { padding: 8px 14px 12px; font-size: 12px; color: var(--text2); border-top: 1px solid var(--border); line-height: 1.55; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="project">// TMS_TRIP_GENERATOR · Interview Reference</div>
+      <h1>Bus Trip Analysis Pipeline</h1>
+      <div class="hsub">Python · Offline Batch · ProcessPool + DP Algorithm · 1,600 vehicles</div>
+    </div>
+    <div class="badges">
+      <span class="badge badge-teal">3h → 30 min</span>
+      <span class="badge badge-blue">99% stop accuracy</span>
+      <span class="badge badge-amber">RAW + DTG Merge</span>
+      <span class="badge badge-purple">Honest Track</span>
+    </div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="show('arch',this)">① Architecture</button>
+  <button class="tab" onclick="show('algo',this)">② Algorithm</button>
+  <button class="tab" onclick="show('perf',this)">③ Performance</button>
+  <button class="tab" onclick="show('data',this)">④ Data Format</button>
+  <button class="tab" onclick="show('infra',this)">⑤ Infrastructure</button>
+</div>
+
+<div id="panel-arch" class="panel active">
+  <div class="slabel">End-to-end pipeline</div>
+  <div class="card">
+    <div class="flow" style="margin-bottom:10px">
+      <div class="flow-box"><div class="step">Source A</div><div class="label">BMS Raw Logs</div><div class="sub">GPS · JSONL files</div></div>
+      <div class="arr">+</div>
+      <div class="flow-box"><div class="step">Source B</div><div class="label">DTG Database</div><div class="sub">MySQL · daily records</div></div>
+      <div class="arr">→</div>
+      <div class="flow-box hl-teal"><div class="step">Cache Layer</div><div class="label">LogIngestor</div><div class="sub">JSONL.GZ per route</div></div>
+      <div class="arr">→</div>
+      <div class="flow-box hl-blue"><div class="step">Loader</div><div class="label">DataLoader</div><div class="sub">Merge + Normalize</div></div>
+    </div>
+    <div class="flow" style="justify-content:flex-end">
+      <div class="arr">↓</div>
+      <div class="flow-box hl-purple"><div class="step">Parallel Engine</div><div class="label">TripAnalyzer</div><div class="sub">ProcessPool × 4</div></div>
+      <div class="arr">→</div>
+      <div class="flow-box hl-amber"><div class="step">Core Algorithm</div><div class="label">Splitter + Timeline</div><div class="sub">Trip separation + DP</div></div>
+      <div class="arr">→</div>
+      <div class="flow-box hl-green"><div class="step">Output</div><div class="label">Reporter</div><div class="sub">dia / master / detail CSV</div></div>
+    </div>
+  </div>
+
+  <div class="slabel">Four processing stages</div>
+  <div class="g2">
+    <div class="card">
+      <div class="phase-badge pb-1">STAGE 1 — Ingestion</div>
+      <div style="p0;margin-bottom:6px">Log Caching</div>
+      <div style="font-size:13px;color:var(--text2)">We scan all raw GPS log files and compress them into a per-route cache. If the cache already exists for that date, we skip the scan entirely.</div>
+      <div style="font-size:11.5px;color:var(--teal);margin-top:8px;font-style:italic">Why: re-scanning hundreds of MB on every run was too slow.</div>
+    </div>
+    <div class="card">
+      <div class="phase-badge pb-1">STAGE 2 — Loading</div>
+      <div style="p0;margin-bottom:6px">Data Merge</div>
+      <div style="font-size:13px;color:var(--text2)">The cache and DTG database are merged into one clean dataset. Duplicates are removed, and coordinates stored as integers are divided by one million to get real GPS values.</div>
+      <div style="font-size:11.5px;color:var(--teal);margin-top:8px;font-style:italic">Why: two sources overlap — without deduplication, the same event gets counted twice.</div>
+    </div>
+    <div class="card">
+      <div class="phase-badge pb-2">STAGE 3 — Analysis</div>
+      <div style="p0;margin-bottom:6px">Trip Analysis (parallel)</div>
+      <div style="font-size:13px;color:var(--text2)">Four processes run at the same time — one per route. Each is fully isolated, so if one route fails, the others keep running.</div>
+      <div style="font-size:11.5px;color:var(--teal);margin-top:8px;font-style:italic">Why: Python's GIL blocks true parallel threads — separate processes bypass that.</div>
+    </div>
+    <div class="card">
+      <div class="phase-badge pb-2">STAGE 4 — Export</div>
+      <div style="p0;margin-bottom:6px">Reporting + DB Load</div>
+      <div style="font-size:13px;color:var(--text2)">Results are written to CSV first. DB import is a separate step — so you can check the output before touching the database. Failed imports can be retried without re-running the analysis.</div>
+      <div style="font-size:11.5px;color:var(--teal);margin-top:8px;font-style:italic">Why: separating the two steps makes debugging much easier.</div>
+    </div>
+  </div>
+
+  <div class="slabel">Key design decisions</div>
+  <div class="g2">
+    <div class="card">
+      <div style="p0;margin-bottom:8px">Honest Track principle</div>
+      <div style="font-size:13px;color:var(--text2)">If there is no GPS evidence for a stop, we record <code>None</code> — not an estimate, not an interpolation. The output has to be legally defensible.</div>
+    </div>
+    <div class="card">
+      <div style="p0;margin-bottom:8px">Analysis vs. DB export separation</div>
+      <div style="font-size:13px;color:var(--text2)">Run analysis first, verify the CSV output, then trigger DB import with a separate flag. Failed imports can be retried without redoing the full analysis.</div>
+    </div>
+    <div class="card">
+      <div style="p0;margin-bottom:8px">Service type environment variable</div>
+      <div style="font-size:13px;color:var(--text2)">One variable controls which database and Redis endpoint is used — city, village, or test. This prevents writing data to the wrong service by accident.</div>
+    </div>
+    <div class="card">
+      <div style="p0;margin-bottom:8px">Redis single scan</div>
+      <div style="font-size:13px;color:var(--text2)">Old: one Redis query per route, every time. New: one scan at startup builds all the maps we need and automatically detects new routes.</div>
+    </div>
+  </div>
+</div>
+
+<div id="panel-algo" class="panel">
+  <div class="slabel">Stage 1 — Trip separation (splitter)</div>
+  <div class="card">
+    <div style="p0;margin-bottom:10px">How does the splitter know when a new trip starts?</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:12px">The idea is simple: when a bus returns to the origin area, a new trip begins. We set a 100-meter radius around the origin. When the GPS position crosses back inside that circle, we mark a trip boundary.</div>
+    <div class="flow" style="margin-bottom:12px">
+      <div class="flow-box hl-teal"><div class="step">All points at once</div><div class="label">Distance check</div><div class="sub">NumPy vectorized</div></div>
+      <div class="arr">→</div>
+      <div class="flow-box"><div class="step">Detect</div><div class="label">Re-entry edge</div><div class="sub">outside → inside</div></div>
+      <div class="arr">→</div>
+      <div class="flow-box hl-amber"><div class="step">Guard</div><div class="label">10 min cooldown</div><div class="sub">ignore false re-entry</div></div>
+      <div class="arr">→</div>
+      <div class="flow-box hl-green"><div class="step">Output</div><div class="label">Trip segment</div><div class="sub">one per valid trip</div></div>
+    </div>
+    <button class="sim-btn sim-btn-teal" onclick="toggleSim('splitter')">▶ Simulate Trip Splitting</button>
+  </div>
+
+  <div id="sim-splitter" class="sim-panel">
+    <div class="sim-toolbar">
+      <label>Scenario:</label>
+      <button class="sim-btn sim-btn-teal" style="margin-top:0;padding:3px 10px;font-size:10px" onclick="runSplitter('normal')">🚌 Normal (2 trips)</button>
+      <button class="sim-btn sim-btn-amber" style="margin-top:0;padding:3px 10px;font-size:10px" onclick="runSplitter('cooldown')">⏱ Cooldown filter</button>
+      <button class="sim-btn sim-btn-neutral" style="margin-top:0;padding:3px 10px;font-size:10px" onclick="runSplitter('gap')">📡 Gap split (30 min)</button>
+    </div>
+    <canvas id="canvas-splitter" height="220"></canvas>
+    <div class="sim-caption" id="splitter-caption"></div>
+  </div>
+
+  <div class="slabel">Three force-split rules</div>
+  <div class="card">
+    <div class="rule">
+      <div class="dot dot-amber"></div>
+      <div>
+        <strong>10-minute cooldown</strong> — If the bus re-enters the origin within 10 minutes of leaving, we ignore it. The route might pass near the depot mid-trip.
+        <span class="why">Without this guard, a short loop near the origin would create a false split.</span>
+      </div>
+    </div>
+    <div class="rule">
+      <div class="dot dot-red"></div>
+      <div>
+        <strong>30-minute GPS gap → force split</strong> — If GPS goes silent for over 30 minutes, the device was probably powered off. We cut the trip there.
+        <span class="why">Continuing the same trip across a 30-min gap would produce wrong arrival times.</span>
+      </div>
+    </div>
+    <div class="rule">
+      <div class="dot dot-blue"></div>
+      <div>
+        <strong>20-minute dwell at origin → force split</strong> — If the bus stays inside the origin area for over 20 minutes, it is waiting for the next departure.
+        <span class="why">Long dwell at the depot means one trip ended and another is about to start.</span>
+      </div>
+    </div>
+    <div class="rule">
+      <div class="dot dot-teal"></div>
+      <div>
+        <strong>Minimum travel distance</strong> — If the bus never travels far enough from the origin, we discard that candidate. It is depot noise, not a real trip.
+        <span class="why">GPS drift at the depot can look like movement — this rule filters it out.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="slabel">Stage 2 — Stop matching (timeline)</div>
+  <div class="card" style="margin-bottom:12px">
+    <div style="p0;margin-bottom:10px">How do we find when the bus passed each stop?</div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px">
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--teal);min-width:20px;margin-top:2px">①</span>
+        <div><strong>Bounding box filter</strong> — Draw a box around the stop. Only GPS points inside the box move forward. This avoids running heavy calculations on every point.</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--teal);min-width:20px;margin-top:2px">②</span>
+        <div><strong>Precise distance check</strong> — For the filtered candidates only, calculate the exact distance to the stop center. Points within the radius become hits.</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--teal);min-width:20px;margin-top:2px">③</span>
+        <div><strong>Clustering</strong> — GPS hits within 30 seconds of each other are grouped into one cluster. One cluster = one visit to that stop.</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--purple);min-width:20px;margin-top:2px">④</span>
+        <div><strong>DP optimization</strong> — Each cluster gets a score. DP finds the highest-scoring sequence that respects stop order and time order. Details below.</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--teal);min-width:20px;margin-top:2px">⑤</span>
+        <div><strong>2-pass check</strong> — After DP, we scan forward and backward once more to catch any timestamps that are still out of order.</div>
+      </div>
+    </div>
+    <button class="sim-btn sim-btn-purple" onclick="toggleSim('dp')" style="margin-top:4px">▶ Simulate DP Stop Matching</button>
+  </div>
+
+  <div id="sim-dp" class="sim-panel">
+    <div class="sim-toolbar">
+      <label>Step:</label>
+      <button class="sim-btn sim-btn-blue"    style="margin-top:0;padding:3px 10px;font-size:10px" onclick="setDPStep(0)">① Raw clusters</button>
+      <button class="sim-btn sim-btn-teal"    style="margin-top:0;padding:3px 10px;font-size:10px" onclick="setDPStep(1)">② Score each</button>
+      <button class="sim-btn sim-btn-purple"  style="margin-top:0;padding:3px 10px;font-size:10px" onclick="setDPStep(2)">③ DP select</button>
+      <button class="sim-btn sim-btn-neutral" style="margin-top:0;padding:3px 10px;font-size:10px" onclick="setDPStep(3)">④ Honest Track</button>
+    </div>
+    <canvas id="canvas-dp" height="260"></canvas>
+    <div class="sim-caption" id="dp-caption">
+      <strong>① Raw clusters</strong> — After hit scanning and clustering, each stop may have multiple cluster candidates. Stop C has none — GPS never entered its radius.
+    </div>
+  </div>
+
+  <div class="slabel">DP score function</div>
+  <div class="card">
+    <div style="font-size:13px;color:var(--text2);margin-bottom:10px">Each cluster gets a score based on three things. DP finds the path with the highest total score — with two hard rules: stop order must go forward, and time must go forward.</div>
+    <div class="score-box">
+      dist_score = <span>max(0, 100 − distance × 1.5)</span>   ← closer to stop = higher score<br>
+      size_score = <span>min(100, point_count × 2)</span>       ← more GPS hits = higher score<br>
+      bonus      = <span>+20 if source is RAW data</span>       ← real measured data gets a bonus<br>
+      ─────────────────────────────────────────<br>
+      Two rules: <span>stop order must go forward</span> AND <span>time must go forward</span>
+    </div>
+    <div style="font-size:12px;color:var(--text3);margin-top:8px">If a stop has no cluster — no GPS data within the radius — it is recorded as <code>None</code>. No guessing. No interpolation.</div>
+  </div>
+</div>
+
+<div id="panel-perf" class="panel">
+  <div class="slabel">Parallel execution model</div>
+  <div class="g2">
+    <div class="card">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--teal);margin-bottom:10px">CPU BOUND — Route Analysis</div>
+      <div style="p0;margin-bottom:6px">Process Pool</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:10px">Python has a lock called the GIL — it prevents true parallel execution in threads. To get around that, we use separate processes. Each route runs in its own process with its own Python interpreter.</div>
+      <div class="kv"><span class="k">Workers</span><span class="v">4 processes</span></div>
+      <div class="kv"><span class="k">Isolation</span><span class="v">one interpreter per route</span></div>
+      <div class="kv"><span class="k">If one fails</span><span class="v">others keep running</span></div>
+    </div>
+    <div class="card">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--blue);margin-bottom:10px">I/O BOUND — DB Export</div>
+      <div style="p0;margin-bottom:6px">Thread Pool</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:10px">Database writes spend most of their time waiting — not using the CPU. Threads are enough for that. We also switched to bulk insert — 1,000 rows per query instead of one at a time.</div>
+      <div class="kv"><span class="k">Workers</span><span class="v">unlimited (no cap)</span></div>
+      <div class="kv"><span class="k">Bulk insert</span><span class="v">1,000 rows per query</span></div>
+      <div class="kv"><span class="k">Retry</span><span class="v">up to 5 times</span></div>
+    </div>
+  </div>
+
+  <div class="slabel">Before / After</div>
+  <div class="card">
+    <div class="ba" style="margin-bottom:16px">
+      <div class="ba-box ba-before"><div class="ba-lbl">BEFORE</div><div class="ba-val">max 2 DB threads — hard limit to avoid lock collisions</div></div>
+      <div class="ba-arr">→</div>
+      <div class="ba-box ba-after"><div class="ba-lbl">AFTER</div><div class="ba-val">unlimited threads — bulk insert removed the lock pressure</div></div>
+    </div>
+    <div class="ba" style="margin-bottom:16px">
+      <div class="ba-box ba-before"><div class="ba-lbl">BEFORE</div><div class="ba-val">One Redis query per route, every time</div></div>
+      <div class="ba-arr">→</div>
+      <div class="ba-box ba-after"><div class="ba-lbl">AFTER</div><div class="ba-val">One scan at startup — all routes detected automatically</div></div>
+    </div>
+    <div class="ba">
+      <div class="ba-box ba-before"><div class="ba-lbl">BEFORE</div><div class="ba-val">Distance calculation on every GPS point × every stop</div></div>
+      <div class="ba-arr">→</div>
+      <div class="ba-box ba-after"><div class="ba-lbl">AFTER</div><div class="ba-val">Bounding box filter first — heavy calculation only on candidates</div></div>
+    </div>
+  </div>
+
+  <div class="slabel">Bounding box filter — how it works</div>
+  <div class="card">
+    <div style="font-size:13px;color:var(--text2);margin-bottom:12px">Before calculating the exact distance to a stop, we draw a simple box around it. Points clearly outside the box are skipped — no math needed. Only points inside go through the full distance check.</div>
+    <button class="sim-btn sim-btn-blue" onclick="toggleSim('bbox')">▶ Simulate BBox Filter</button>
+  </div>
+
+  <div id="sim-bbox" class="sim-panel">
+    <div class="sim-toolbar">
+      <label>Step:</label>
+      <button class="sim-btn sim-btn-blue"   style="margin-top:0;padding:3px 10px;font-size:10px" onclick="runBbox('filter')">① Box filter</button>
+      <button class="sim-btn sim-btn-purple" style="margin-top:0;padding:3px 10px;font-size:10px" onclick="runBbox('precise')">② Distance check</button>
+    </div>
+    <canvas id="canvas-bbox" height="240"></canvas>
+    <div class="sim-caption" id="bbox-caption">
+      <strong>① BBox filter</strong> — Grey points are outside the bounding box and skipped immediately. Only blue points inside the box move to the next step.
+    </div>
+  </div>
+
+  <div class="slabel">Cache strategy</div>
+  <div class="g2">
+    <div class="card">
+      <div class="opt-row" style="margin-bottom:0">
+        <div class="opt-icon">💾</div>
+        <div style="flex:1">
+          <div class="opt-title">Cache skip</div>
+          <div class="opt-note">If a cache file already exists for that date, we skip the entire log scan. A force-rebuild flag is available when needed.</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="opt-row" style="margin-bottom:0">
+        <div class="opt-icon">🌙</div>
+        <div style="flex:1">
+          <div class="opt-title">Midnight window</div>
+          <div class="opt-note">We load three days of logs — yesterday, today, and tomorrow — to capture late-night runs that cross midnight.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="panel-data" class="panel">
+  <div class="slabel">Data transformation flow · Datentransformationsfluss</div>
+
+  <!-- Step-by-step vertical flow -->
+  <div style="display:flex;flex-direction:column;gap:0;margin-bottom:16px">
+
+    <!-- Step 1: NormalizedPoint -->
+    <div style="display:flex;gap:14px;align-items:stretch">
+      <div style="display:flex;flex-direction:column;align-items:center;width:32px;flex-shrink:0">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--bg3);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--text2)">1</div>
+        <div style="width:2px;flex:1;background:var(--border2);min-height:12px"></div>
+      </div>
+      <div class="card" style="flex:1;margin-bottom:0;padding:14px 16px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <span style="font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em">Input</span>
+          <span style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--text)">NormalizedPoint</span>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">(tuple)</span>
+        </div>
+        <!-- Field table inline -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+          <div style="background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:8px 10px">
+            <div style="font-family:var(--mono);font-size:11px;color:var(--blue);font-weight:600">ts</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:2px">Unix timestamp</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:1px">when the GPS pinged</div>
+          </div>
+          <div style="background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:8px 10px">
+            <div style="font-family:var(--mono);font-size:11px;color:var(--blue);font-weight:600">lat / lon</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:2px">Raw GPS coords</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:1px">as-received from device</div>
+          </div>
+          <div style="background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:8px 10px">
+            <div style="font-family:var(--mono);font-size:11px;color:var(--teal);font-weight:600">corr_lat / corr_lon</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:2px">Corrected coords</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:1px">optional — may be None</div>
+          </div>
+          <div style="background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:8px 10px;grid-column:span 3">
+            <div style="font-family:var(--mono);font-size:11px;color:var(--blue);font-weight:600">file</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:2px">Source label — <code style="font-size:11px">"RAW"</code> or <code style="font-size:11px">"DTG"</code> — tells the pipeline which device produced this point</div>
+          </div>
+        </div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:8px">⚠ abs(lat) &gt; 1000 → lat ÷ 1,000,000 &nbsp;(integer encoding guard)</div>
+      </div>
+    </div>
+
+    <!-- Arrow label 1→2 -->
+    <div style="display:flex;gap:14px;align-items:center">
+      <div style="width:32px;flex-shrink:0;display:flex;flex-direction:column;align-items:center">
+        <div style="width:2px;height:10px;background:var(--border2)"></div>
+        <div style="font-size:14px;color:var(--text3)">↓</div>
+        <div style="width:2px;height:10px;background:var(--border2)"></div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);font-family:var(--mono)">Splitter cuts the stream into per-trip segments</div>
+    </div>
+
+    <!-- Step 2: TripCandidate -->
+    <div style="display:flex;gap:14px;align-items:stretch">
+      <div style="display:flex;flex-direction:column;align-items:center;width:32px;flex-shrink:0">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--teal-dim);border:2px solid var(--teal-border);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--teal)">2</div>
+        <div style="width:2px;flex:1;background:var(--border2);min-height:12px"></div>
+      </div>
+      <div class="card hl-teal" style="flex:1;margin-bottom:0;padding:14px 16px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <span style="font-family:var(--mono);font-size:10px;color:var(--teal);text-transform:uppercase;letter-spacing:.08em">Splitter output</span>
+          <span style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--text)">TripCandidate</span>
+        </div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:10px">One object per trip — contains the vehicle, route identity, and time window. <code>chosen_map</code> starts empty at this stage.</div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px">
+          <div class="kv" style="background:var(--bg2);border-radius:4px;padding:5px 8px;margin:0"><span class="k">veh</span><span class="v">Licence plate</span></div>
+          <div class="kv" style="background:var(--bg2);border-radius:4px;padding:5px 8px;margin:0"><span class="k">route_id / trip_no</span><span class="v">Route + trip #</span></div>
+          <div class="kv" style="background:var(--bg2);border-radius:4px;padding:5px 8px;margin:0"><span class="k">start_ts / end_ts</span><span class="v">Trip time window</span></div>
+          <div class="kv" style="background:var(--bg2);border-radius:4px;padding:5px 8px;margin:0"><span class="k">chosen_map</span><span class="v" style="color:var(--text3);font-style:italic">{} — empty for now</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Arrow label 2→3 -->
+    <div style="display:flex;gap:14px;align-items:center">
+      <div style="width:32px;flex-shrink:0;display:flex;flex-direction:column;align-items:center">
+        <div style="width:2px;height:10px;background:var(--border2)"></div>
+        <div style="font-size:14px;color:var(--text3)">↓</div>
+        <div style="width:2px;height:10px;background:var(--border2)"></div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);font-family:var(--mono)">scan_hits → cluster_hits → DP 2-Pass fills in chosen_map</div>
+    </div>
+
+    <!-- Step 3: chosen_map (filled) -->
+    <div style="display:flex;gap:14px;align-items:stretch">
+      <div style="display:flex;flex-direction:column;align-items:center;width:32px;flex-shrink:0">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--amber-dim);border:2px solid var(--amber-border);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--amber)">3</div>
+        <div style="width:2px;flex:1;background:var(--border2);min-height:12px"></div>
+      </div>
+      <div class="card hl-amber" style="flex:1;margin-bottom:0;padding:14px 16px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <span style="font-family:var(--mono);font-size:10px;color:var(--amber);text-transform:uppercase;letter-spacing:.08em">DP + 2-Pass output</span>
+          <span style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--text)">chosen_map</span>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">Dict[int → Cluster | None]</span>
+        </div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:10px">Maps each stop's sequence number to the best GPS cluster — or <code>None</code> if the bus passed without a clear GPS fix near that stop.</div>
+        <!-- Mini example -->
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-family:var(--mono);font-size:11.5px;line-height:1.9">
+          <div style="color:var(--text3);font-size:10px;margin-bottom:4px"># example chosen_map</div>
+          <div><span style="color:var(--blue)">1</span> <span style="color:var(--text3)">→</span> <span style="color:var(--green)">Cluster(ts_min=07:02:11, ts_max=07:02:34, size=8)</span>  <span style="color:var(--text3);font-size:10px"># stop 1 ✓</span></div>
+          <div><span style="color:var(--blue)">2</span> <span style="color:var(--text3)">→</span> <span style="color:var(--green)">Cluster(ts_min=07:18:44, ts_max=07:19:01, size=5)</span>  <span style="color:var(--text3);font-size:10px"># stop 2 ✓</span></div>
+          <div><span style="color:var(--blue)">3</span> <span style="color:var(--text3)">→</span> <span style="color:var(--red)">None</span>                                                   <span style="color:var(--text3);font-size:10px"># stop 3 — no GPS evidence</span></div>
+          <div><span style="color:var(--blue)">4</span> <span style="color:var(--text3)">→</span> <span style="color:var(--green)">Cluster(ts_min=07:31:09, ts_max=07:31:22, size=11)</span> <span style="color:var(--text3);font-size:10px"># stop 4 ✓</span></div>
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-top:8px">None = no interpolation, no guessing — the record is legally defensible as-is.</div>
+      </div>
+    </div>
+
+    <!-- Arrow label 3→4 -->
+    <div style="display:flex;gap:14px;align-items:center">
+      <div style="width:32px;flex-shrink:0;display:flex;flex-direction:column;align-items:center">
+        <div style="width:2px;height:10px;background:var(--border2)"></div>
+        <div style="font-size:14px;color:var(--text3)">↓</div>
+        <div style="width:2px;height:10px;background:var(--border2)"></div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);font-family:var(--mono)">Reporter reads chosen_map → writes CSV files</div>
+    </div>
+
+    <!-- Step 4: CSV output -->
+    <div style="display:flex;gap:14px;align-items:stretch">
+      <div style="display:flex;flex-direction:column;align-items:center;width:32px;flex-shrink:0">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--green-dim);border:2px solid #86efac;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--green)">4</div>
+      </div>
+      <div class="card" style="flex:1;margin-bottom:0;padding:14px 16px;border-color:#86efac;background:var(--green-dim)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <span style="font-family:var(--mono);font-size:10px;color:var(--green);text-transform:uppercase;letter-spacing:.08em">Reporter output</span>
+          <span style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--text)">CSV files</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:5px;padding:8px 10px">
+            <div style="font-family:var(--mono);font-size:11px;color:var(--teal);font-weight:600">dia CSV</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:3px">Pivot table — rows=stops, cols=trips. Operator-readable.</div>
+          </div>
+          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:5px;padding:8px 10px">
+            <div style="font-family:var(--mono);font-size:11px;color:var(--blue);font-weight:600">master CSV</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:3px">Per-trip summary. <code>CHK_PERCENT</code> = stop recognition rate.</div>
+          </div>
+          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:5px;padding:8px 10px">
+            <div style="font-family:var(--mono);font-size:11px;color:var(--purple);font-weight:600">detail CSV</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:3px">Per-event rows. S=depart / E=arrive. DB import format.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="slabel">Cluster object · Cluster-Objekt</div>
+  <div class="card">
+    <div class="g3">
+      <div><div class="kv"><span class="k">stop_seq</span><span class="v">Stop order</span></div></div>
+      <div><div class="kv"><span class="k">ts_min</span><span class="v">Arrival time</span></div></div>
+      <div><div class="kv"><span class="k">ts_max</span><span class="v">Departure time</span></div></div>
+      <div><div class="kv"><span class="k">median_ts</span><span class="v">Representative ts</span></div></div>
+      <div><div class="kv"><span class="k">size</span><span class="v">GPS point count</span></div></div>
+      <div><div class="kv"><span class="k">source</span><span class="v">CORR / RAW / DTG</span></div></div>
+    </div>
+  </div>
+
+  <div class="slabel">Cluster object · Cluster-Objekt</div>
+  <div class="card">
+    <div class="g3">
+      <div><div class="kv"><span class="k">stop_seq</span><span class="v">Stop order</span></div></div>
+      <div><div class="kv"><span class="k">ts_min</span><span class="v">Arrival time</span></div></div>
+      <div><div class="kv"><span class="k">ts_max</span><span class="v">Departure time</span></div></div>
+      <div><div class="kv"><span class="k">median_ts</span><span class="v">Representative ts</span></div></div>
+      <div><div class="kv"><span class="k">size</span><span class="v">GPS point count</span></div></div>
+      <div><div class="kv"><span class="k">source</span><span class="v">CORR / RAW / DTG</span></div></div>
+    </div>
+  </div>
+
+  <div class="slabel">Output CSV files · Ausgabe-CSV-Dateien</div>
+  <div class="g3">
+    <div class="card">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--teal);margin-bottom:8px">dia CSV</div>
+      <div style="font-size:13px;color:var(--text2)">Human-readable pivot table. Rows = stops, columns = trips. Excel-friendly format for operators.<br><span style="font-size:11px;color:var(--text3)">Menschenlesbare Pivot-Tabelle</span></div>
+    </div>
+    <div class="card">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--blue);margin-bottom:8px">master CSV</div>
+      <div style="font-size:13px;color:var(--text2)">Per-trip summary. Key fields: <code>DRIVE_CNT</code>, <code>CHK_PERCENT</code> (stop recognition rate), <code>MID_START_YN</code>.<br><span style="font-size:11px;color:var(--text3)">Fahrtübersicht mit Erkennungsrate</span></div>
+    </div>
+    <div class="card">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--purple);margin-bottom:8px">detail CSV</div>
+      <div style="font-size:13px;color:var(--text2)">Per-event rows. <code>EVENT_TYPE</code>: S(depart) / E(arrive). <code>STATION_TIME</code> in HHMMSS. LOAD DATA INFILE format.<br><span style="font-size:11px;color:var(--text3)">Ereigniszeilen für DB-Import</span></div>
+    </div>
+  </div>
+</div>
+
+<div id="panel-infra" class="panel">
+  <div class="slabel">Runtime configuration</div>
+  <div class="card" style="font-family:var(--mono);font-size:13px;color:var(--text2);line-height:1.9">
+    <div style="color:var(--text3);margin-bottom:4px"># Stage 1 — analysis only</div>
+    <div>python main.py --date <span style="color:var(--teal)">20260513</span> --log-dir /app/logs --workers <span style="color:var(--teal)">4</span></div>
+    <div style="color:var(--text3);margin:8px 0 4px"># Stage 2 — DB export after verification</div>
+    <div>python main.py --date <span style="color:var(--teal)">20260513</span> --log-dir /app/logs --workers <span style="color:var(--teal)">4</span> <span style="color:var(--amber)">--export-db</span></div>
+    <div style="color:var(--text3);margin:8px 0 4px"># Force cache rebuild</div>
+    <div>python main.py --date <span style="color:var(--teal)">20260513</span> <span style="color:var(--amber)">--rebuild-cache</span></div>
+  </div>
+
+  <div class="slabel">Key numbers</div>
+  <div class="g2">
+    <div class="card">
+      <div style="font-family:var(--mono);font-size:11px;color:var(--teal);margin-bottom:10px">PARALLELISM · PARALLELITÄT</div>
+      <div class="kv"><span class="k">Analysis workers</span><span class="v">4 processes</span></div>
+      <div class="kv"><span class="k">DB export workers</span><span class="v">unlimited</span></div>
+      <div class="kv"><span class="k">DB bulk insert</span><span class="v">1,000 rows per query</span></div>
+      <div class="kv"><span class="k">DB retry</span><span class="v">up to 5 times, 2s wait</span></div>
+    </div>
+    <div class="card">
+      <div style="font-family:var(--mono);font-size:11px;color:var(--teal);margin-bottom:10px">ALGORITHM PARAMETERS · PARAMETER</div>
+      <div class="kv"><span class="k">Origin radius</span><span class="v">100 m</span></div>
+      <div class="kv"><span class="k">Cooldown</span><span class="v">10 min</span></div>
+      <div class="kv"><span class="k">Gap split</span><span class="v">30 min</span></div>
+      <div class="kv"><span class="k">Dwell split</span><span class="v">20 min</span></div>
+      <div class="kv"><span class="k">Cluster gap</span><span class="v">30 sec</span></div>
+    </div>
+  </div>
+
+  <div class="slabel">Tech stack</div>
+  <div class="card">
+    <div class="g2">
+      <div>
+        <div class="kv"><span class="k">Language</span><span class="v">Python 3</span></div>
+        <div class="kv"><span class="k">Parallelism</span><span class="v">ProcessPool + ThreadPool</span></div>
+        <div class="kv"><span class="k">Geometry</span><span class="v">NumPy</span></div>
+        <div class="kv"><span class="k">Cache format</span><span class="v">JSONL.GZ</span></div>
+        <div class="kv"><span class="k">Database</span><span class="v">MySQL</span></div>
+        <div class="kv"><span class="k">Meta store</span><span class="v">Redis</span></div>
+      </div>
+      <div>
+        <div class="kv"><span class="k">No GIL bottleneck</span><span class="v">→ ProcessPool</span></div>
+        <div class="kv"><span class="k">No lock contention</span><span class="v">→ Bulk insert</span></div>
+        <div class="kv"><span class="k">No redundant scan</span><span class="v">→ Cache skip</span></div>
+        <div class="kv"><span class="k">No fake data</span><span class="v">→ Honest Track</span></div>
+        <div class="kv"><span class="k">No N+1 query</span><span class="v">→ Redis single scan</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slabel">Key phrases for the interview</div>
+  <div class="quote">"Python has a lock called the GIL — it blocks true parallel execution in threads. To get around that, we used a process pool. Each route runs in its own process, so a failure in one never affects the others."</div>
+  <div class="quote">"The DP algorithm finds the best stop sequence by enforcing two rules: stop order must go forward, and time must go forward. The bus cannot visit stop 10 before stop 5, and timestamps cannot go backward."</div>
+  <div class="quote">"If there is no GPS evidence for a stop, we record None — no estimate, no interpolation. The data has to be legally defensible."</div>
+  <div class="quote">"We originally capped DB export at two threads to avoid lock collisions. After switching to bulk inserts — one thousand rows per query — the lock pressure disappeared. So we removed the limit entirely."</div>
+  <div class="quote">"Before, we ran one Redis query per route every time the pipeline started. Now, one scan at startup builds all the maps we need and auto-detects new routes."</div>
+</div>
+
+<div class="footer">
+  <span>TMS_TRIP_GENERATOR · Interview Reference</span>
+  <span style="font-family:var(--mono)">trip_generator_reference_en.html</span>
+</div>
+</div>
+
+<script>
+/* ── TABS ── */
+function show(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function toggleSim(id) {
+  const el = document.getElementById('sim-' + id);
+  const opening = !el.classList.contains('open');
+  el.classList.toggle('open');
+  if (opening) {
+    if (id === 'splitter') setTimeout(() => runSplitter('normal'), 50);
+    if (id === 'dp')       setTimeout(() => setDPStep(0), 50);
+    if (id === 'bbox')     setTimeout(() => runBbox('filter'), 50);
+  }
+}
+
+/* ╠════════════════════════════════════
+   SPLITTER SIMULATION  (two-lane, slow)
+╠════════════════════════════════════ */
+let splitRAF = null, splitTick = 0, splitScenario = 'normal';
+const SPLIT_TOTAL = 540;
+
+function runSplitter(scenario) {
+  splitScenario = scenario;
+  if (splitRAF) { cancelAnimationFrame(splitRAF); splitRAF = null; }
+  splitTick = 0;
+  const c = document.getElementById('canvas-splitter');
+  c.width = c.parentElement.offsetWidth;
+  const captions = {
+    normal:
+      '<strong>Normal — 2 trips detected</strong> — The bus travels out to the terminus, then returns to origin. When it crosses back inside the 100m circle, Trip 1 ends and Trip 2 begins.',
+    cooldown:
+      '<strong>Cooldown filter — false split prevented</strong> — Mid-route the bus briefly passes near the origin. Re-entry fires, but the 10-minute cooldown ignores it — Trip 1 continues. Only the real return after the cooldown starts Trip 2.',
+    gap:
+      '<strong>Gap split — 30-min GPS silence</strong> — GPS drops for over 30 minutes. The engine force-splits at that point. Whatever resumes after becomes a new trip candidate.'
+  };
+  document.getElementById('splitter-caption').innerHTML = captions[scenario];
+  animSplitter();
+}
+
+function animSplitter() {
+  const c = document.getElementById('canvas-splitter');
+  drawSplitter(c, splitScenario, splitTick);
+  splitTick++;
+  if (splitTick >= SPLIT_TOTAL) splitTick = 0;
+  splitRAF = requestAnimationFrame(animSplitter);
+}
+
+function drawSplitter(c, scenario, tick) {
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const PAD = 64;
+  const laneW = W - PAD * 2;
+  const fwdY = H * 0.28;
+  const retY = H * 0.70;
+  const originX = PAD;
+  const termX   = W - PAD;
+
+  ctx.fillStyle = '#f8fafc';
+  ctx.fillRect(PAD, fwdY - 14, laneW, 28);
+  ctx.fillRect(PAD, retY - 14, laneW, 28);
+
+  [fwdY, retY].forEach(y => {
+    ctx.beginPath(); ctx.moveTo(PAD, y); ctx.lineTo(W - PAD, y);
+    ctx.strokeStyle = '#d1d5db'; ctx.lineWidth = 1.5;
+    ctx.setLineDash([6,4]); ctx.stroke(); ctx.setLineDash([]);
+  });
+
+  ctx.font = '9px IBM Plex Mono, monospace'; ctx.fillStyle = '#9ca3af'; ctx.textAlign = 'right';
+  ctx.fillText('outbound →', PAD - 6, fwdY + 4);
+  ctx.fillText('← return', PAD - 6, retY + 4);
+
+  ctx.fillStyle = '#ccfbf1bb';
+  ctx.fillRect(PAD - 20, fwdY - 30, 40, (retY - fwdY) + 60);
+  ctx.strokeStyle = '#0d9488'; ctx.lineWidth = 1.5;
+  ctx.strokeRect(PAD - 20, fwdY - 30, 40, (retY - fwdY) + 60);
+  ctx.font = 'bold 9px IBM Plex Mono, monospace'; ctx.fillStyle = '#0d9488'; ctx.textAlign = 'center';
+  ctx.fillText('ORIGIN', PAD, fwdY - 38);
+  ctx.fillText('100 m', PAD, fwdY - 27);
+
+  ctx.fillStyle = '#f5f3ff';
+  ctx.strokeStyle = '#c4b5fd'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.roundRect(termX - 24, fwdY - 22, 48, 44, 5); ctx.fill(); ctx.stroke();
+  ctx.font = 'bold 9px IBM Plex Mono, monospace'; ctx.fillStyle = '#7c3aed'; ctx.textAlign = 'center';
+  ctx.fillText('TERMINUS', termX, fwdY - 30);
+
+  function drawLine(y, x0, x1, color) {
+    if (x1 <= x0) return;
+    ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y);
+    ctx.strokeStyle = color; ctx.lineWidth = 3.5; ctx.setLineDash([]); ctx.stroke();
+  }
+  function drawBus(x, y, flipped) {
+    ctx.save(); ctx.font = '18px serif'; ctx.textAlign = 'center';
+    if (flipped) { ctx.scale(-1,1); ctx.fillText('\uD83D\uDE8C', -x, y + 6); }
+    else { ctx.fillText('\uD83D\uDE8C', x, y + 6); }
+    ctx.restore();
+  }
+  function subEase(prog, t0, t1) {
+    const r = Math.max(0, Math.min(1, (prog - t0) / (t1 - t0)));
+    return r < 0.5 ? 2*r*r : -1+(4-2*r)*r;
+  }
+  function splitMarker() {
+    ctx.beginPath();
+    ctx.moveTo(originX + 22, fwdY - 38); ctx.lineTo(originX + 22, retY + 44);
+    ctx.strokeStyle = '#0d9488'; ctx.lineWidth = 1.5;
+    ctx.setLineDash([4,3]); ctx.stroke(); ctx.setLineDash([]);
+    ctx.font = 'bold 9px IBM Plex Mono, monospace'; ctx.fillStyle = '#0d9488'; ctx.textAlign = 'left';
+    ctx.fillText('SPLIT', originX + 26, (fwdY + retY) / 2 + 4);
+  }
+
+  const p = tick / SPLIT_TOTAL;
+  const c1 = '#1d4ed8', c2 = '#7c3aed';
+
+  if (scenario === 'normal') {
+    const fwd1 = originX + subEase(p, 0.00, 0.28) * laneW;
+    drawLine(fwdY, originX, fwd1, c1);
+    if (p > 0.08) {
+      ctx.font = 'bold 10px IBM Plex Mono, monospace'; ctx.fillStyle = c1; ctx.textAlign = 'center';
+      ctx.fillText('Trip 1', originX + (fwd1 - originX) * 0.5, fwdY - 22);
+    }
+    if (p >= 0.28 && p < 0.34) {
+      ctx.font = '9px IBM Plex Mono, monospace'; ctx.fillStyle = '#7c3aed'; ctx.textAlign = 'center';
+      ctx.fillText('arrived at terminus', termX, fwdY - 10);
+    }
+    if (p >= 0.34) {
+      const ret1x = termX - subEase(p, 0.34, 0.57) * laneW;
+      drawLine(retY, ret1x, termX, c1);
+      if (p < 0.53) {
+        ctx.font = '9px IBM Plex Mono, monospace'; ctx.fillStyle = c1; ctx.textAlign = 'center';
+        ctx.fillText('returning to origin…', (ret1x + termX) / 2, retY - 22);
+      }
+    }
+    if (p >= 0.57) {
+      ctx.beginPath(); ctx.arc(originX, retY, 8, 0, Math.PI * 2);
+      ctx.fillStyle = '#0d9488'; ctx.fill();
+      ctx.font = '9px IBM Plex Mono, monospace'; ctx.fillStyle = '#0d9488'; ctx.textAlign = 'center';
+      ctx.fillText('re-entry ✓', originX, retY + 24);
+      ctx.fillText('Trip 1 ends', originX, retY + 35);
+      splitMarker();
+    }
+    if (p >= 0.63) {
+      const fwd2 = originX + subEase(p, 0.63, 0.90) * laneW;
+      drawLine(fwdY, originX, fwd2, c2);
+      ctx.font = 'bold 10px IBM Plex Mono, monospace'; ctx.fillStyle = c2; ctx.textAlign = 'center';
+      ctx.fillText('Trip 2', originX + (fwd2 - originX) * 0.5, fwdY - 22);
+    }
+    if (p < 0.28)      drawBus(originX + subEase(p,0.00,0.28)*laneW, fwdY, false);
+    else if (p < 0.34) drawBus(termX, fwdY, false);
+    else if (p < 0.57) drawBus(termX - subEase(p,0.34,0.57)*laneW, retY, true);
+    else if (p < 0.63) drawBus(originX, retY, true);
+    else               drawBus(originX + subEase(p,0.63,0.90)*laneW, fwdY, false);
+
+  } else if (scenario === 'cooldown') {
+    const falseX = originX + laneW * 0.36;
+    const seg1 = originX + subEase(p, 0.00, 0.22) * (falseX - originX);
+    drawLine(fwdY, originX, seg1, c1);
+    ctx.font = 'bold 10px IBM Plex Mono, monospace'; ctx.fillStyle = c1; ctx.textAlign = 'center';
+    ctx.fillText('Trip 1 (uninterrupted)', originX + laneW * 0.28, fwdY - 22);
+    if (p >= 0.22) {
+      const br = 9 * Math.min(subEase(p,0.22,0.28), 1);
+      ctx.beginPath(); ctx.arc(falseX, fwdY, br, 0, Math.PI*2);
+      ctx.fillStyle = '#ef444488'; ctx.fill();
+      ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.font = 'bold 9px IBM Plex Mono, monospace'; ctx.fillStyle = '#dc2626'; ctx.textAlign = 'center';
+      ctx.fillText('is_entry fired!', falseX, fwdY - 20);
+      if (p >= 0.27) {
+        ctx.fillStyle = '#fef2f2'; ctx.strokeStyle = '#fca5a5'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.roundRect(falseX-66, fwdY+22, 132, 22, 4); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#dc2626'; ctx.font = '9px IBM Plex Mono, monospace'; ctx.textAlign = 'center';
+        ctx.fillText('⏱ cooldown active → IGNORED ✓', falseX, fwdY+37);
+      }
+    }
+    if (p >= 0.28) {
+      const seg2 = falseX + subEase(p,0.28,0.52)*(termX-falseX);
+      drawLine(fwdY, falseX, seg2, c1);
+    }
+    if (p >= 0.55) {
+      const retx = termX - subEase(p,0.55,0.74)*laneW;
+      drawLine(retY, retx, termX, c1);
+      if (p < 0.70) {
+        ctx.font = '9px IBM Plex Mono, monospace'; ctx.fillStyle = c1; ctx.textAlign = 'center';
+        ctx.fillText('returning…', (retx+termX)/2, retY-22);
+      }
+    }
+    if (p >= 0.74) {
+      ctx.beginPath(); ctx.arc(originX, retY, 8, 0, Math.PI*2);
+      ctx.fillStyle = '#0d9488'; ctx.fill();
+      ctx.font = '9px IBM Plex Mono, monospace'; ctx.fillStyle = '#0d9488'; ctx.textAlign = 'center';
+      ctx.fillText('real re-entry ✓', originX, retY+24);
+      ctx.fillText('cooldown expired', originX, retY+35);
+      splitMarker();
+    }
+    if (p >= 0.80) {
+      const fwd2 = originX + subEase(p,0.80,1.00)*laneW*0.55;
+      drawLine(fwdY, originX, fwd2, c2);
+      ctx.font = 'bold 10px IBM Plex Mono, monospace'; ctx.fillStyle = c2; ctx.textAlign = 'center';
+      ctx.fillText('Trip 2', originX+(fwd2-originX)*0.5, fwdY-22);
+    }
+    if (p < 0.22)      drawBus(originX+subEase(p,0.00,0.22)*(falseX-originX), fwdY, false);
+    else if (p < 0.52) drawBus(falseX+subEase(p,0.28,0.52)*(termX-falseX), fwdY, false);
+    else if (p < 0.55) drawBus(termX, fwdY, false);
+    else if (p < 0.74) drawBus(termX-subEase(p,0.55,0.74)*laneW, retY, true);
+    else if (p < 0.80) drawBus(originX, retY, true);
+    else               drawBus(originX+subEase(p,0.80,1.00)*laneW*0.55, fwdY, false);
+
+  } else {
+    const gapSX = originX + laneW*0.42, gapEX = originX + laneW*0.60;
+    const seg1 = originX + subEase(p,0.00,0.34)*(gapSX-originX);
+    drawLine(fwdY, originX, seg1, c1);
+    if (p > 0.10) {
+      ctx.font = 'bold 10px IBM Plex Mono, monospace'; ctx.fillStyle = c1; ctx.textAlign = 'center';
+      ctx.fillText('Trip 1', originX+(gapSX-originX)*0.45, fwdY-22);
+    }
+    if (p >= 0.34) {
+      const ga = Math.min(subEase(p,0.34,0.44),1);
+      ctx.fillStyle = `rgba(254,242,242,${ga*0.75})`;
+      ctx.fillRect(gapSX, fwdY-34, gapEX-gapSX, (retY-fwdY)+68);
+      ctx.strokeStyle = `rgba(252,165,165,${ga})`; ctx.lineWidth = 1.5;
+      ctx.setLineDash([5,3]);
+      ctx.beginPath(); ctx.moveTo(gapSX,fwdY-34); ctx.lineTo(gapSX,retY+34); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(gapEX,fwdY-34); ctx.lineTo(gapEX,retY+34); ctx.stroke();
+      ctx.setLineDash([]);
+      if (ga >= 0.7) {
+        const gm = (gapSX+gapEX)/2;
+        ctx.font = 'bold 9px IBM Plex Mono, monospace'; ctx.fillStyle = '#dc2626'; ctx.textAlign = 'center';
+        ctx.fillText('GPS gap > 30 min', gm, fwdY-18);
+        ctx.fillText('device off?', gm, fwdY-6);
+        ctx.font = '18px serif'; ctx.globalAlpha = 0.30+0.20*Math.sin(tick*0.10);
+        ctx.fillText('\u2753', gm, fwdY+8); ctx.globalAlpha=1;
+        ctx.fillStyle='#fffbeb'; ctx.strokeStyle='#fcd34d'; ctx.lineWidth=1;
+        ctx.beginPath(); ctx.roundRect(gapSX-46,retY+18,92,22,4); ctx.fill(); ctx.stroke();
+        ctx.fillStyle='#b45309'; ctx.font='bold 9px IBM Plex Mono, monospace'; ctx.textAlign='center';
+        ctx.fillText('\u26A1 FORCE SPLIT', gapSX, retY+33);
+      }
+    }
+    if (p >= 0.52) {
+      const seg2 = gapEX + subEase(p,0.52,0.88)*(termX-gapEX);
+      drawLine(fwdY, gapEX, seg2, c2);
+      ctx.font = 'bold 10px IBM Plex Mono, monospace'; ctx.fillStyle = c2; ctx.textAlign = 'center';
+      ctx.fillText('Trip 2 (new candidate)', gapEX+(seg2-gapEX)*0.5, fwdY-22);
+    }
+    if (p < 0.34)      drawBus(originX+subEase(p,0.00,0.34)*(gapSX-originX), fwdY, false);
+    else if (p < 0.52) { const gm=(gapSX+gapEX)/2; ctx.font='18px serif'; ctx.textAlign='center'; ctx.globalAlpha=0.30+0.20*Math.sin(tick*0.10); ctx.fillText('\u2753',gm,fwdY+8); ctx.globalAlpha=1; }
+    else               drawBus(gapEX+subEase(p,0.52,0.88)*(termX-gapEX), fwdY, false);
+  }
+}
+
+/* ════════════════════════════════════════
+   DP SIMULATION
+════════════════════════════════════════ */
+let dpStep = 0;
+const STOPS = 6;
+// stops: seq 1-6, some have multiple cluster candidates
+const stopData = [
+  { seq: 1, name: 'Stop A', clusters: [{t:1.2, dist:8,  size:12, src:'RAW'}, {t:1.5, dist:22, size:4, src:'DTG'}] },
+  { seq: 2, name: 'Stop B', clusters: [{t:2.1, dist:5,  size:18, src:'RAW'}, {t:2.6, dist:14, size:7, src:'RAW'}] },
+  { seq: 3, name: 'Stop C', clusters: [] }, // no GPS — Honest Track → None
+  { seq: 4, name: 'Stop D', clusters: [{t:4.0, dist:11, size:9,  src:'CORR'},{t:4.3, dist:30, size:3, src:'DTG'}] },
+  { seq: 5, name: 'Stop E', clusters: [{t:5.2, dist:3,  size:22, src:'RAW'}] },
+  { seq: 6, name: 'Stop F', clusters: [{t:6.1, dist:7,  size:14, src:'RAW'}, {t:5.9, dist:20, size:5, src:'DTG'}] },
+];
+
+function clusterScore(c) {
+  return Math.max(0, 100 - c.dist * 1.5) + Math.min(100, c.size * 2) + (c.src === 'RAW' ? 20 : 0);
+}
+
+// DP: find best monotonic path
+const dpSelected = []; // index of chosen cluster per stop (-1 = None)
+(function computeDP() {
+  // flatten nodes
+  const nodes = [];
+  stopData.forEach((s, si) => {
+    s.clusters.forEach((c, ci) => nodes.push({ si, ci, seq: s.seq, t: c.t, score: clusterScore(c) }));
+  });
+  const dp = nodes.map(n => ({ best: n.score, prev: -1 }));
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = 0; j < i; j++) {
+      if (nodes[j].seq < nodes[i].seq && nodes[j].t < nodes[i].t) {
+        const cand = dp[j].best + nodes[i].score;
+        if (cand > dp[i].best) { dp[i].best = cand; dp[i].prev = j; }
+      }
+    }
+  }
+  // trace back from highest scoring node at last stop
+  let best = -1, bestScore = -Infinity;
+  nodes.forEach((n, i) => { if (n.si === stopData.length - 1 && dp[i].best > bestScore) { best = i; bestScore = dp[i].best; } });
+  // mark selected
+  stopData.forEach(s => dpSelected.push(-1));
+  let cur = best;
+  while (cur >= 0) {
+    dpSelected[nodes[cur].si] = nodes[cur].ci;
+    cur = dp[cur].prev;
+  }
+})();
+
+function setDPStep(step) {
+  dpStep = step;
+  const c = document.getElementById('canvas-dp');
+  c.width = c.parentElement.offsetWidth;
+  drawDP(c, step);
+  const captions = [
+    '<strong>① Raw clusters</strong> — Each stop has one or more candidate clusters at different timestamps. Stop C has none — GPS never entered its radius.',
+    '<strong>② Score each cluster</strong> — Each candidate is scored: distance to stop center, GPS point count, and a +20 bonus for RAW data. Closer + more points + RAW = better.',
+    '<strong>③ DP selects best path</strong> — DP finds the highest-scoring sequence that satisfies both rules: stop order must go forward, and time must go forward. The purple path is the result.',
+    '<strong>④ Honest Track — None for missing stops</strong> — Stop C had no GPS evidence. It is recorded as <code>None</code>. No interpolation, no guessing — only what the GPS actually captured.'
+  ];
+  document.getElementById('dp-caption').innerHTML = captions[step];
+}
+
+function drawDP(c, step) {
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const padL = 52, padR = 20, padT = 30, padB = 50;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+
+  // axes
+  ctx.strokeStyle = '#e5e7eb'; ctx.lineWidth = 1;
+  // horizontal grid
+  [0, 0.25, 0.5, 0.75, 1].forEach(t => {
+    const y = padT + t * plotH;
+    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(padL + plotW, y);
+    ctx.setLineDash([3,3]); ctx.stroke(); ctx.setLineDash([]);
+  });
+
+  // stop columns
+  const stopXs = stopData.map((_, i) => padL + (i + 0.5) * plotW / STOPS);
+  const timeToY = (t) => padT + ((t - 0.8) / 6.0) * plotH;
+
+  // stop labels + circles on bottom
+  stopData.forEach((s, i) => {
+    const x = stopXs[i];
+    ctx.font = '10px IBM Plex Mono, monospace'; ctx.fillStyle = '#8a90a8'; ctx.textAlign = 'center';
+    ctx.fillText(s.name, x, H - 8);
+    ctx.beginPath(); ctx.arc(x, padT + plotH + 14, 5, 0, Math.PI * 2);
+    ctx.fillStyle = '#0d9488'; ctx.fill();
+  });
+
+  // time axis label
+  ctx.save(); ctx.translate(14, padT + plotH / 2); ctx.rotate(-Math.PI / 2);
+  ctx.font = '10px IBM Plex Mono, monospace'; ctx.fillStyle = '#8a90a8'; ctx.textAlign = 'center';
+  ctx.fillText('time →', 0, 0); ctx.restore();
+
+  // draw clusters
+  stopData.forEach((s, si) => {
+    const x = stopXs[si];
+    if (s.clusters.length === 0) {
+      // Honest Track - None marker (show from step 0)
+      const y = padT + plotH * 0.5;
+      ctx.beginPath(); ctx.arc(x, y, 10, 0, Math.PI * 2);
+      ctx.fillStyle = '#f3f4f6'; ctx.strokeStyle = '#d1d5db'; ctx.lineWidth = 1.5;
+      ctx.fill(); ctx.stroke();
+      ctx.font = '11px IBM Plex Mono, monospace'; ctx.fillStyle = '#9ca3af'; ctx.textAlign = 'center';
+      ctx.fillText('–', x, y + 4);
+      if (step >= 3) {
+        ctx.fillStyle = '#6b7280'; ctx.font = '9px IBM Plex Mono, monospace';
+        ctx.fillText('None', x, y + 22);
+      }
+      return;
+    }
+
+    s.clusters.forEach((cl, ci) => {
+      const y = timeToY(cl.t);
+      const score = clusterScore(cl);
+      const isSelected = step >= 2 && dpSelected[si] === ci;
+      const isCandidate = step >= 0;
+
+      if (!isCandidate) return;
+
+      // connection line to stop base
+      ctx.beginPath(); ctx.moveTo(x, padT + plotH + 14); ctx.lineTo(x, y);
+      ctx.strokeStyle = '#e5e7eb'; ctx.lineWidth = 1; ctx.setLineDash([2,3]); ctx.stroke(); ctx.setLineDash([]);
+
+      const r = step >= 1 ? 8 + Math.min(score / 20, 6) : 8;
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+      if (isSelected) {
+        ctx.fillStyle = '#7c3aed'; ctx.strokeStyle = '#5b21b6'; ctx.lineWidth = 2;
+      } else {
+        ctx.fillStyle = '#bfdbfe'; ctx.strokeStyle = '#93c5fd'; ctx.lineWidth = 1.5;
+      }
+      ctx.fill(); ctx.stroke();
+
+      // score label
+      if (step >= 1) {
+        ctx.font = `${isSelected ? 'bold ' : ''}9px IBM Plex Mono, monospace`;
+        ctx.fillStyle = isSelected ? '#ffffff' : '#1d4ed8';
+        ctx.textAlign = 'center';
+        ctx.fillText(Math.round(score), x, y + 3);
+      }
+
+      // source label
+      if (step >= 1) {
+        ctx.font = '8px IBM Plex Mono, monospace';
+        ctx.fillStyle = cl.src === 'RAW' ? '#0d9488' : (cl.src === 'CORR' ? '#7c3aed' : '#9ca3af');
+        ctx.fillText(cl.src, x + r + 4, y);
+      }
+    });
+  });
+
+  // draw DP path lines
+  if (step >= 2) {
+    let prevX = null, prevY = null;
+    stopData.forEach((s, si) => {
+      const ci = dpSelected[si];
+      if (ci < 0 || !s.clusters[ci]) return;
+      const x = stopXs[si];
+      const y = timeToY(s.clusters[ci].t);
+      if (prevX !== null) {
+        ctx.beginPath(); ctx.moveTo(prevX, prevY); ctx.lineTo(x, y);
+        ctx.strokeStyle = '#7c3aed'; ctx.lineWidth = 2; ctx.setLineDash([]);
+        ctx.stroke();
+      }
+      prevX = x; prevY = y;
+    });
+  }
+
+  // step indicator
+  const stepLabels = ['① Clusters', '② Scores', '③ DP path', '④ Honest Track'];
+  ctx.font = 'bold 11px IBM Plex Mono, monospace'; ctx.fillStyle = '#0d9488'; ctx.textAlign = 'left';
+  ctx.fillText(stepLabels[step], padL, padT - 8);
+}
+
+
+/* ════════════════════════════════════
+   BBOX FILTER SIMULATION
+════════════════════════════════════ */
+let bboxMode = 'filter';
+function seededRand(seed) { let s = seed; return () => { s = (s * 1664525 + 1013904223) & 0xffffffff; return (s >>> 0) / 0xffffffff; }; }
+
+function runBbox(mode) {
+  bboxMode = mode;
+  const c = document.getElementById('canvas-bbox');
+  c.width = c.parentElement.offsetWidth;
+  drawBbox(c, mode);
+  const captions = {
+    filter: '<strong>① BBox filter</strong> — Grey points are outside the bounding box and skipped immediately — no distance calculation needed. Only the blue points inside the box move to the next step. This eliminates most of the work upfront.',
+    precise: '<strong>② Distance check</strong> — For the blue points inside the box, we calculate the exact distance to the stop center. Green points are within the stop radius (hits). Red points are inside the box but too far.'
+  };
+  document.getElementById('bbox-caption').innerHTML = captions[mode];
+}
+
+function drawBbox(c, mode) {
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  ctx.clearRect(0, 0, W, H);
+  const rand = seededRand(42);
+  const cx = W * 0.5, cy = H * 0.5;
+  const boxW = W * 0.32, boxH = H * 0.48;
+  const stopR = Math.min(boxW, boxH) * 0.38;
+  ctx.fillStyle = '#f8f9fc'; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = 'rgba(219,234,254,0.35)';
+  ctx.fillRect(cx - boxW/2, cy - boxH/2, boxW, boxH);
+  ctx.strokeStyle = '#93c5fd'; ctx.lineWidth = 1.5; ctx.setLineDash([5,4]);
+  ctx.strokeRect(cx - boxW/2, cy - boxH/2, boxW, boxH); ctx.setLineDash([]);
+  ctx.font = '9px IBM Plex Mono, monospace'; ctx.fillStyle = '#1d4ed8'; ctx.textAlign = 'left';
+  ctx.fillText('bounding box', cx - boxW/2 + 4, cy - boxH/2 + 13);
+  if (mode === 'precise') {
+    ctx.beginPath(); ctx.arc(cx, cy, stopR, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(209,250,229,0.5)'; ctx.fill();
+    ctx.strokeStyle = '#16a34a'; ctx.lineWidth = 1.5; ctx.setLineDash([4,3]); ctx.stroke(); ctx.setLineDash([]);
+    ctx.font = '9px IBM Plex Mono, monospace'; ctx.fillStyle = '#16a34a'; ctx.textAlign = 'center';
+    ctx.fillText('stop radius', cx, cy - stopR - 6);
+  }
+  ctx.beginPath(); ctx.arc(cx, cy, 7, 0, Math.PI*2); ctx.fillStyle = '#0d9488'; ctx.fill();
+  ctx.font = 'bold 9px IBM Plex Mono, monospace'; ctx.fillStyle = '#0d9488'; ctx.textAlign = 'center';
+  ctx.fillText('STOP', cx, cy + 20);
+  const points = [];
+  for (let i = 0; i < 55; i++) {
+    const px = rand() * W * 0.88 + W * 0.06;
+    const py = rand() * H * 0.80 + H * 0.10;
+    const inBox = px >= cx - boxW/2 && px <= cx + boxW/2 && py >= cy - boxH/2 && py <= cy + boxH/2;
+    const dist = Math.sqrt((px-cx)**2 + (py-cy)**2);
+    points.push({ px, py, inBox, inRadius: dist <= stopR });
+  }
+  points.forEach(pt => {
+    ctx.beginPath(); ctx.arc(pt.px, pt.py, 4, 0, Math.PI*2);
+    if (mode === 'filter') {
+      ctx.fillStyle = pt.inBox ? '#1d4ed8' : '#d1d5db';
+      ctx.strokeStyle = pt.inBox ? '#1e40af' : '#9ca3af';
+    } else {
+      if (!pt.inBox) { ctx.fillStyle = '#d1d5db'; ctx.strokeStyle = '#9ca3af'; }
+      else if (pt.inRadius) { ctx.fillStyle = '#16a34a'; ctx.strokeStyle = '#15803d'; }
+      else { ctx.fillStyle = '#ef4444'; ctx.strokeStyle = '#dc2626'; }
+    }
+    ctx.lineWidth = 1; ctx.fill(); ctx.stroke();
+  });
+  const leg = mode === 'filter'
+    ? [['#1d4ed8','inside box → check distance'],['#d1d5db','outside box → skip']]
+    : [['#16a34a','within radius → hit'],['#ef4444','inside box, too far'],['#d1d5db','outside box → skipped']];
+  let lx = 12; const ly = H - 12;
+  ctx.font = '9px IBM Plex Mono, monospace';
+  leg.forEach(([col, label]) => {
+    ctx.beginPath(); ctx.arc(lx+4, ly-3, 4, 0, Math.PI*2); ctx.fillStyle = col; ctx.fill();
+    ctx.fillStyle = '#6b7280'; ctx.textAlign = 'left'; ctx.fillText(label, lx+12, ly);
+    lx += ctx.measureText(label).width + 28;
+  });
+}
+
+window.addEventListener('resize', () => {
+  if (document.getElementById('sim-splitter').classList.contains('open')) runSplitter(splitScenario);
+  if (document.getElementById('sim-dp').classList.contains('open')) setDPStep(dpStep);
+  if (document.getElementById('sim-bbox') && document.getElementById('sim-bbox').classList.contains('open')) runBbox(bboxMode);
+});
+</script>
+</body>
+</html>

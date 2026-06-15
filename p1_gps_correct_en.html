@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPS Correction Pipeline — Interview Reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f8f9fc;
+  --bg2: #ffffff;
+  --bg3: #f0f2f7;
+  --border: #e2e5ef;
+  --border2: #d0d4e3;
+  --text: #1a1d2e;
+  --text2: #2e3454;
+  --text3: #8a90a8;
+  --teal: #0d9488;
+  --teal-dim: #e6faf8;
+  --teal-border: #99e6de;
+  --amber: #b45309;
+  --amber-dim: #fffbeb;
+  --amber-border: #fcd34d;
+  --blue: #1d4ed8;
+  --blue-dim: #eff6ff;
+  --blue-border: #93c5fd;
+  --red: #dc2626;
+  --red-dim: #fef2f2;
+  --green: #16a34a;
+  --green-dim: #f0fdf4;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 15px; line-height: 1.6; min-height: 100vh; }
+.page { max-width: 900px; margin: 0 auto; padding: 32px 24px 60px; }
+.header { border-bottom: 1px solid var(--border2); padding-bottom: 20px; margin-bottom: 24px; }
+.header-top { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; }
+.title-block .project { font-family: var(--mono); font-size: 11px; color: var(--teal); letter-spacing: .1em; margin-bottom: 6px; }
+.title-block h1 { font-size: 22px; font-weight: 600; color: var(--text); letter-spacing: -.02em; }
+.title-block .de { font-size: 13px; color: var(--text2); margin-top: 3px; }
+.badges { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-start; margin-top: 4px; }
+.badge { font-family: var(--mono); font-size: 11px; padding: 4px 10px; border-radius: 4px; border: 1px solid; }
+.badge-teal { color: var(--teal); border-color: var(--teal-border); background: var(--teal-dim); }
+.badge-amber { color: var(--amber); border-color: var(--amber-border); background: var(--amber-dim); }
+.badge-blue { color: var(--blue); border-color: var(--blue-border); background: var(--blue-dim); }
+.tabs { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.tab { font-family: var(--mono); font-size: 12px; padding: 8px 16px; border: none; background: none; color: var(--text3); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .15s, border-color .15s; white-space: nowrap; }
+.tab:hover { color: var(--text2); }
+.tab.active { color: var(--teal); border-bottom-color: var(--teal); }
+.panel { display: none; }
+.panel.active { display: block; }
+.slabel { font-family: var(--mono); font-size: 11px; color: var(--text3); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 10px; margin-top: 20px; }
+.slabel:first-child { margin-top: 0; }
+.card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; margin-bottom: 12px; }
+.flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.flow-box { background: var(--bg3); border: 1px solid var(--border2); border-radius: 6px; padding: 10px 14px; min-width: 110px; }
+.flow-box .step { font-family: var(--mono); font-size: 10px; color: var(--text3); margin-bottom: 3px; }
+.flow-box .label { font-size: 13px; font-weight: 500; color: var(--text); }
+.flow-box .sub { font-family: var(--mono); font-size: 11px; color: var(--text2); margin-top: 2px; }
+.flow-box.hl-teal { border-color: var(--teal-border); background: var(--teal-dim); }
+.flow-box.hl-blue { border-color: var(--blue-border); background: var(--blue-dim); }
+.flow-box.hl-green { border-color: #86efac; background: var(--green-dim); }
+.arr { color: var(--text3); font-size: 16px; flex-shrink: 0; }
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+@media(max-width:600px){ .g2,.g3{ grid-template-columns:1fr; } }
+.kv { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+.kv:last-child { border-bottom: none; }
+.kv .k { color: var(--text2); font-family: var(--mono); font-size: 13px; font-weight:500; }
+.kv .v { font-weight: 500; color: var(--text); text-align: right; }
+.mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+@media(max-width:600px){ .mode-grid { grid-template-columns:1fr; } }
+.mode-card { border-radius: 8px; padding: 14px 16px; }
+.mode-a { background: var(--amber-dim); border: 1px solid var(--amber-border); }
+.mode-b { background: var(--blue-dim); border: 1px solid var(--blue-border); }
+.mode-title { font-family: var(--mono); font-size: 11px; font-weight: 500; margin-bottom: 10px; }
+.mode-a .mode-title { color: var(--amber); }
+.mode-b .mode-title { color: var(--blue); }
+.rule { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 7px; font-size: 12px; color: var(--text2); }
+.dot { width: 5px; height: 5px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+.dot-amber { background: var(--amber); }
+.dot-blue { background: var(--blue); }
+.rule .de { font-size: 11px; color: var(--text3); display: block; margin-top: 1px; }
+.ba { display: grid; grid-template-columns: 1fr 24px 1fr; align-items: center; gap: 8px; margin: 10px 0; }
+.ba-box { border-radius: 6px; padding: 10px 12px; font-size: 12px; }
+.ba-before { background: var(--red-dim); border: 1px solid #fca5a5; color: var(--red); }
+.ba-after  { background: var(--green-dim); border: 1px solid #86efac; color: var(--green); }
+.ba-lbl { font-family: var(--mono); font-size: 10px; opacity: .7; margin-bottom: 2px; }
+.ba-val { font-weight: 500; }
+.ba-arr { color: var(--text3); text-align: center; }
+.opt-row { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 20px; }
+.opt-icon { font-size: 20px; margin-top: 1px; width: 28px; flex-shrink: 0; text-align: center; }
+.opt-title { font-size: 14px; font-weight: 500; color: var(--text); }
+.opt-sub { font-family: var(--mono); font-size: 11px; color: var(--text3); margin-top: 2px; }
+.opt-note { font-size: 12px; color: var(--text2); margin-top: 6px; }
+.metric { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; text-align: center; }
+.m-before { font-family: var(--mono); font-size: 18px; font-weight: 500; color: var(--red); }
+.m-arrow { color: var(--text3); margin: 4px 0; font-size: 14px; }
+.m-after  { font-family: var(--mono); font-size: 20px; font-weight: 500; color: var(--green); }
+.m-lbl { font-size: 11px; color: var(--text2); margin-top: 6px; }
+.m-lbl .de { color: var(--text3); font-size: 10px; display: block; }
+.quote { background: var(--bg3); border-left: 3px solid var(--teal); border-radius: 0 6px 6px 0; padding: 12px 16px; margin-bottom: 10px; font-size: 13.5px; color: var(--text2); font-style: italic; line-height: 1.7; }
+.scale-row { display: flex; gap: 24px; flex-wrap: wrap; }
+.scale-item { text-align: center; }
+.scale-val { font-family: var(--mono); font-size: 20px; font-weight: 500; color: var(--teal); }
+.scale-lbl { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.scale-lbl .de { color: var(--text3); font-size: 10px; }
+.data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+.data-col { padding: 0 16px 0 0; }
+.data-col:last-child { padding-left: 16px; padding-right: 0; border-left: 1px solid var(--border); }
+.data-head { font-family: var(--mono); font-size: 10px; color: var(--text3); margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+.data-head.red { color: var(--red); }
+.data-head.green { color: var(--green); }
+.footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--border); font-family: var(--mono); font-size: 11px; color: var(--text3); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+
+/* ── SIMULATE BUTTON ── */
+.sim-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--mono); font-size: 11px;
+  padding: 5px 12px; border-radius: 5px; border: 1px solid;
+  cursor: pointer; margin-top: 10px;
+  transition: opacity .15s; user-select: none;
+}
+.sim-btn:hover { opacity: 0.75; }
+.sim-btn-amber { color: var(--amber); border-color: var(--amber-border); background: var(--amber-dim); }
+.sim-btn-blue { color: var(--blue); border-color: var(--blue-border); background: var(--blue-dim); }
+.sim-btn-teal { color: var(--teal); border-color: var(--teal-border); background: var(--teal-dim); }
+.sim-btn-neutral { color: var(--text2); border-color: var(--border2); background: var(--bg3); }
+
+/* ── SIMULATION PANEL ── */
+.sim-panel {
+  display: none; margin-top: 12px;
+  border-radius: 8px; overflow: hidden;
+  border: 1px solid var(--border2); background: var(--bg2);
+  animation: fadeIn .2s ease;
+}
+@keyframes fadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+.sim-panel.open { display: block; }
+.sim-panel canvas { display: block; width: 100%; }
+.sim-toolbar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px; background: var(--bg3);
+  border-bottom: 1px solid var(--border); flex-wrap: wrap;
+}
+.sim-toolbar label { font-family: var(--mono); font-size: 11px; color: var(--text2); }
+.sim-toolbar input[type=range] { width: 90px; accent-color: var(--amber); }
+.sim-legend {
+  display: flex; gap: 14px; padding: 8px 14px;
+  border-top: 1px solid var(--border); flex-wrap: wrap;
+}
+.sim-legend span { font-family: var(--mono); font-size: 10px; color: var(--text2); display: flex; align-items: center; gap: 5px; }
+.leg-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.sim-caption { padding: 8px 14px 12px; font-size: 12px; color: var(--text2); border-top: 1px solid var(--border); line-height: 1.55; }
+.rule .why { font-size: 11.5px; color: var(--text3); display: block; margin-top: 3px; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-top">
+      <div class="title-block">
+        <div class="project">// TMS_REDIS_CORRECT_API · Interview Reference</div>
+        <h1>Real-Time GPS Correction Pipeline</h1>
+        <div class="de">Echtzeit-GPS-Korrektur · Spring Boot + Redis · 1,600 Fahrzeuge</div>
+      </div>
+      <div class="badges">
+        <span class="badge badge-teal">Lag: 10,000 → &lt;10</span>
+        <span class="badge badge-amber">Latency: 3min → &lt;1s</span>
+        <span class="badge badge-blue">Redis I/O: 200× → 1×</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="show('arch',this)">① Architecture</button>
+    <button class="tab" onclick="show('algo',this)">② Algorithm</button>
+    <button class="tab" onclick="show('opt',this)">③ Optimizations</button>
+    <button class="tab" onclick="show('results',this)">④ Results</button>
+    <button class="tab" onclick="show('infra',this)">⑤ Infrastructure</button>
+  </div>
+
+  <!-- ① ARCHITECTURE -->
+  <div id="panel-arch" class="panel active">
+    <div class="slabel">End-to-end data flow</div>
+    <div class="card">
+      <div class="flow" style="margin-bottom:10px">
+        <div class="flow-box"><div class="step">Device</div><div class="label">BMS Terminal</div><div class="sub">Raw GPS · 1 rec/s</div></div>
+        <div class="arr">→</div>
+        <div class="flow-box"><div class="step">Relay</div><div class="label">Socket Program</div><div class="sub">Publish raw packet</div></div>
+        <div class="arr">→</div>
+        <div class="flow-box hl-teal"><div class="step">Redis Stream (in)</div><div class="label">Incoming queue</div><div class="sub">Raw telemetry</div></div>
+        <div class="arr">→</div>
+        <div class="flow-box hl-blue"><div class="step">Spring Boot</div><div class="label">Correction Engine</div><div class="sub">Mode A / B</div></div>
+      </div>
+      <div class="flow" style="justify-content:flex-end">
+        <div class="arr">↓</div>
+        <div class="flow-box hl-green"><div class="step">Redis Stream (out)</div><div class="label">Corrected events</div><div class="sub">Clean GPS data</div></div>
+        <div class="arr">+</div>
+        <div class="flow-box hl-green"><div class="step">Redis SET</div><div class="label">Latest state cache</div><div class="sub">Per-vehicle snapshot</div></div>
+        <div class="arr">→</div>
+        <div class="flow-box"><div class="step">Consumers</div><div class="label">Web UI / Dashboard</div><div class="sub">Operator view</div></div>
+      </div>
+    </div>
+
+    <div class="slabel">Internal pipeline steps</div>
+    <div class="card">
+      <div class="flow">
+        <div class="flow-box"><div class="step">① Consumer</div><div class="label">Read from Redis</div><div class="sub">Batch 200 records</div></div>
+        <div class="arr">→</div>
+        <div class="flow-box"><div class="step">② Parser</div><div class="label">TelemetryParser</div><div class="sub">JSON → Java object</div></div>
+        <div class="arr">→</div>
+        <div class="flow-box hl-blue"><div class="step">③ Service</div><div class="label">CorrectService</div><div class="sub">Mode A or B</div></div>
+        <div class="arr">→</div>
+        <div class="flow-box"><div class="step">④ Producer</div><div class="label">Write result</div><div class="sub">Pipeline to Redis</div></div>
+        <div class="arr">→</div>
+        <div class="flow-box hl-teal"><div class="step">⑤ ACK</div><div class="label">Confirm done</div><div class="sub">Mark complete</div></div>
+      </div>
+    </div>
+
+    <div class="slabel">Key design decisions</div>
+    <div class="g2">
+      <div class="card">
+        <div style="p0;margin-bottom:8px">Manual polling</div>
+        <div style="font-size:13px;color:var(--text2)">We wrote a single-thread loop ourselves instead of using Spring's built-in listener. This avoids unnecessary context-switching at high load.</div>
+        <div style="font-size:11.5px;color:var(--teal);margin-top:6px;font-style:italic">Why: 1,600 vehicles per second — every extra overhead adds up.</div>
+      </div>
+      <div class="card">
+        <div style="p0;margin-bottom:8px">Fixed consumer name</div>
+        <div style="font-size:13px;color:var(--text2)">Each consumer is named with hostname and index. This prevents ghost consumers from appearing in Redis after a restart.</div>
+        <div style="font-size:11.5px;color:var(--teal);margin-top:6px;font-style:italic">Why: random names on restart create zombie entries that never get cleaned up.</div>
+      </div>
+      <div class="card">
+        <div style="p0;margin-bottom:8px">Read from last on restart</div>
+        <div style="font-size:13px;color:var(--text2)">When the service restarts, we skip any backlog and jump straight to the latest records. Real-time visibility is always the priority.</div>
+        <div style="font-size:11.5px;color:var(--teal);margin-top:6px;font-style:italic">Why: showing 3-minute-old data after a restart is worse than a brief gap.</div>
+      </div>
+      <div class="card">
+        <div style="p0;margin-bottom:8px">Distributed lock</div>
+        <div style="font-size:13px;color:var(--text2)">A daily normalization job runs at 4:15 AM. A Redis-based lock ensures only one instance executes it, even when multiple pods are running.</div>
+        <div style="font-size:11.5px;color:var(--teal);margin-top:6px;font-style:italic">Why: without a lock, every pod would run the job at the same time.</div>
+      </div>
+    </div>
+
+    <div class="slabel">Before / After — what we improved</div>
+    <div class="card">
+      <div class="ba" style="margin-bottom:16px">
+        <div class="ba-box ba-before"><div class="ba-lbl">BEFORE</div><div class="ba-val">Backlog reached 10,000+ records at peak hours</div></div>
+        <div class="ba-arr">→</div>
+        <div class="ba-box ba-after"><div class="ba-lbl">AFTER</div><div class="ba-val">Backlog stays under 10 records at all times</div></div>
+      </div>
+      <div class="ba" style="margin-bottom:16px">
+        <div class="ba-box ba-before"><div class="ba-lbl">BEFORE</div><div class="ba-val">Dashboard data was over 3 minutes old</div></div>
+        <div class="ba-arr">→</div>
+        <div class="ba-box ba-after"><div class="ba-lbl">AFTER</div><div class="ba-val">End-to-end latency under 1 second</div></div>
+      </div>
+      <div class="ba">
+        <div class="ba-box ba-before"><div class="ba-lbl">BEFORE</div><div class="ba-val">200 individual Redis calls per batch</div></div>
+        <div class="ba-arr">→</div>
+        <div class="ba-box ba-after"><div class="ba-lbl">AFTER</div><div class="ba-val">1 pipeline call — 200× I/O reduction</div></div>
+      </div>
+    </div>
+  </div>
+
+<!-- ② ALGORITHM -->
+  <div id="panel-algo" class="panel">
+    <div class="slabel">Mode selection · Modusauswahl</div>
+    <div class="card" style="margin-bottom:12px">
+      <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+        <div style="font-size:13px;color:var(--text2)">Route ID in packet?</div>
+        <span class="badge badge-blue">YES → Mode B (Map-Matching)</span>
+        <span class="badge" style="border-color:var(--border2);color:var(--text2)">NO / snap failed → Mode A (EMA Fallback)</span>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:8px;font-family:var(--mono)">Route ID present → Mode B &nbsp;|&nbsp; No route ID or snap failed → Mode A (fallback)</div>
+    </div>
+
+    <div class="mode-grid">
+      <!-- MODE A -->
+      <div class="mode-card mode-a">
+        <div class="mode-title">MODE A — EMA Smoothing <span style="font-family:var(--mono);font-size:10px;opacity:0.7">· Glättung (Fallback)</span></div>
+        <div class="rule"><div class="dot dot-amber"></div><div>Speed &gt; 140 km/h → discard the record<span class="why">Clearly a sensor error — no bus travels that fast.</span></div></div>
+        <div class="rule"><div class="dot dot-amber"></div><div>GPS jump &gt; 300 m in one second → discard<span class="why">A position jump that large is impossible at normal speed.</span></div></div>
+        <div class="rule"><div class="dot dot-amber"></div><div>Heading change &gt; 120° at speed → discard<span class="why">A bus cannot turn that sharply while moving.</span></div></div>
+        <div class="rule"><div class="dot dot-amber"></div><div>Alpha = 0.5 when moving, 0.05 when stopped<span class="why">When moving, trust the current reading. When stopped, let the historical average dominate — so GPS drift doesn't show fake movement.</span></div></div>
+        <button class="sim-btn sim-btn-amber" onclick="toggleSim('ema')">▶ Simulate EMA Smoothing</button>
+      </div>
+
+      <!-- MODE B -->
+      <div class="mode-card mode-b">
+        <div class="mode-title">MODE B — Map-Matching <span style="font-family:var(--mono);font-size:10px;opacity:0.7">· Kartenabgleich</span></div>
+        <div class="rule"><div class="dot dot-blue"></div><div>Zero-Motion Bypass: speed ≤ 3 km/h + drift ≤ 2 m → skip snap entirely<span class="why">A stopped bus doesn't need map-matching. Reuse previous coordinates at zero CPU cost — and eliminates ghost speed.</span></div></div>
+        <div class="rule"><div class="dot dot-blue"></div><div>Fast distance check — no square root — 10× faster node search<span class="why">For finding the nearest route node, we only need to compare distances — not calculate them exactly. Dropping the square root keeps the order the same.</span></div></div>
+        <div class="rule"><div class="dot dot-blue"></div><div>Heading difference &gt; 80° → fall back to Mode A<span class="why">If the bus direction and the route direction don't match, the snap would land on the wrong segment.</span></div></div>
+        <div class="rule"><div class="dot dot-blue"></div><div>Distance &gt; 100 m from route → abandon snap<span class="why">Too far off the route means the GPS is unreliable. Mode A handles it instead.</span></div></div>
+        <button class="sim-btn sim-btn-blue" onclick="toggleSim('snap')">▶ Simulate Map-Matching Snap</button>
+      </div>
+    </div>
+
+    <!-- EMA SIM PANEL -->
+    <div id="sim-ema" class="sim-panel">
+      <div class="sim-toolbar">
+        <label>Alpha: <strong id="ema-alpha-val">0.50</strong></label>
+        <input type="range" id="ema-alpha" min="5" max="50" value="50" oninput="updateEMA()">
+        <button class="sim-btn sim-btn-amber" style="margin-top:0;padding:3px 10px;font-size:10px" onclick="setEMAMode('moving')">🚌 Moving (α=0.5)</button>
+        <button class="sim-btn sim-btn-amber" style="margin-top:0;padding:3px 10px;font-size:10px" onclick="setEMAMode('stopped')">🛑 Stopped (α=0.05)</button>
+        <button class="sim-btn sim-btn-neutral" style="margin-top:0;padding:3px 10px;font-size:10px" onclick="resetEMA()">↺ Reset</button>
+      </div>
+      <canvas id="canvas-ema" height="230"></canvas>
+      <div class="sim-legend">
+        <span><span class="leg-dot" style="background:#ef4444"></span>Raw GPS (noisy)</span>
+        <span><span class="leg-dot" style="background:#f59e0b"></span>EMA smoothed path</span>
+        <span><span class="leg-dot" style="background:#9ca3af;border-radius:2px;width:16px;height:4px"></span>Road (no route data in Mode A)</span>
+      </div>
+      <div class="sim-caption" id="ema-caption">
+        <strong>Moving · alpha = 0.50</strong> — High alpha means we trust the current GPS reading more. The smoothed line tracks closely but removes sudden spikes.
+      </div>
+    </div>
+
+    <!-- SNAP SIM PANEL -->
+    <div id="sim-snap" class="sim-panel">
+      <div class="sim-toolbar">
+        <label>Scenario:</label>
+        <button class="sim-btn sim-btn-blue" style="margin-top:0;padding:3px 10px;font-size:10px" onclick="runSnap('normal')">✅ Normal Snap</button>
+        <button class="sim-btn sim-btn-amber" style="margin-top:0;padding:3px 10px;font-size:10px" onclick="runSnap('fallback')">⚠️ Fallback (hdg &gt;80°)</button>
+        <button class="sim-btn sim-btn-teal" style="margin-top:0;padding:3px 10px;font-size:10px" onclick="runSnap('bypass')">⏸ Zero-Motion Bypass</button>
+      </div>
+      <canvas id="canvas-snap" height="240"></canvas>
+      <div class="sim-legend">
+        <span><span class="leg-dot" style="background:#ef4444"></span>Raw GPS</span>
+        <span><span class="leg-dot" style="background:#1d4ed8"></span>Snapped to route</span>
+        <span><span class="leg-dot" style="background:#0d9488;border-radius:2px;width:18px;height:4px"></span>Bus route</span>
+        <span><span class="leg-dot" style="background:#f59e0b"></span>Mode A fallback point</span>
+      </div>
+      <div class="sim-caption" id="snap-caption">
+        <strong>Normal Snap</strong> — Raw GPS is off the route. The engine finds the nearest segment and snaps the coordinate onto it. All checks pass → snap succeeds.
+      </div>
+    </div>
+
+    <div class="slabel" style="margin-top:16px">Data transformation example</div>
+    <div class="card">
+      <div class="data-grid">
+        <div class="data-col">
+          <div class="data-head red">RAW INPUT / ROHDATEN</div>
+          <div class="kv"><span class="k">lat / lon</span><span class="v" style="font-family:var(--mono);font-size:12px">37.566535 / 126.977969</span></div>
+          <div class="kv"><span class="k">spd</span><span class="v" style="color:var(--red)">5 km/h (ghost 👻)</span></div>
+          <div class="kv"><span class="k">hdg</span><span class="v" style="color:var(--red)">45.2° (wrong)</span></div>
+          <div class="kv"><span class="k">stopped</span><span class="v">—</span></div>
+          <div class="kv"><span class="k">mode</span><span class="v">—</span></div>
+        </div>
+        <div class="data-col">
+          <div class="data-head green">CORRECTED OUTPUT / KORRIGIERT</div>
+          <div class="kv"><span class="k">correctedLat/Lon</span><span class="v" style="font-family:var(--mono);font-size:12px;color:var(--green)">37.566612 / 126.978001</span></div>
+          <div class="kv"><span class="k">correctedSpd</span><span class="v" style="color:var(--green)">0 km/h ✓</span></div>
+          <div class="kv"><span class="k">correctedHdg</span><span class="v" style="color:var(--green)">90.0° (snapped)</span></div>
+          <div class="kv"><span class="k">stopped</span><span class="v" style="color:var(--green)">true ✓</span></div>
+          <div class="kv"><span class="k">mode</span><span class="v" style="color:var(--blue)">B</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ OPTIMIZATIONS -->
+  <div id="panel-opt" class="panel">
+    <div class="slabel">Key optimizations</div>
+    <div class="card">
+
+      <div class="opt-row">
+        <div class="opt-icon">⚡</div>
+        <div style="flex:1">
+          <div class="opt-title">Redis Pipeline Batching <span style="font-family:var(--mono);font-size:11px;color:var(--text3);font-weight:400">· Pipeline-Bündelung</span></div>
+
+          <div class="ba">
+            <div class="ba-box ba-before"><div class="ba-lbl">BEFORE</div><div class="ba-val">200 SET = 200 round-trips</div></div>
+            <div class="ba-arr">→</div>
+            <div class="ba-box ba-after"><div class="ba-lbl">AFTER</div><div class="ba-val">1 pipeline call = 1 round-trip</div></div>
+          </div>
+          <div class="opt-note">All 200 SET commands are bundled into a single network write. Redis processes them in order and replies once. Result: 200× fewer round-trips.</div>
+          <button class="sim-btn sim-btn-teal" onclick="toggleSim('pipeline')">▶ See the Difference</button>
+        </div>
+      </div>
+
+      <!-- PIPELINE SIM PANEL -->
+      <div id="sim-pipeline" class="sim-panel">
+        <div class="sim-toolbar">
+          <label>Mode:</label>
+          <button class="sim-btn sim-btn-neutral" style="margin-top:0;padding:3px 10px;font-size:10px;border-color:#fca5a5;color:var(--red);background:var(--red-dim)" onclick="runPipeline('before')">❌ Before — 200 round-trips</button>
+          <button class="sim-btn sim-btn-teal" style="margin-top:0;padding:3px 10px;font-size:10px" onclick="runPipeline('after')">✅ After — 1 pipeline</button>
+        </div>
+        <canvas id="canvas-pipeline" height="190"></canvas>
+        <div class="sim-caption" id="pipeline-caption">
+          Click a button above to see the difference in network I/O.
+        </div>
+      </div>
+
+      <div class="opt-row">
+        <div class="opt-icon">♻️</div>
+        <div style="flex:1">
+          <div class="opt-title">Zero-Allocation <span style="font-family:var(--mono);font-size:11px;color:var(--text3);font-weight:400">· GC-Druckreduktion</span></div>
+
+          <div class="ba">
+            <div class="ba-box ba-before"><div class="ba-lbl">BEFORE</div><div class="ba-val">new VehState() per record</div></div>
+            <div class="ba-arr">→</div>
+            <div class="ba-box ba-after"><div class="ba-lbl">AFTER</div><div class="ba-val">mutate in-place, reuse object</div></div>
+          </div>
+          <div class="opt-note">We pre-allocate the state object at startup and just update its fields. We also replaced the time API call with a lightweight millisecond counter — no heap allocation at all. GC pauses dropped to near zero.</div>
+        </div>
+      </div>
+
+      <div class="opt-row">
+        <div class="opt-icon">📐</div>
+        <div style="flex:1">
+          <div class="opt-title">Fast Distance Check <span style="font-family:var(--mono);font-size:11px;color:var(--text3);font-weight:400">· Schnelle Näherungsberechnung</span></div>
+
+          <div class="ba">
+            <div class="ba-box ba-before"><div class="ba-lbl">BEFORE</div><div class="ba-val">Haversine (sin / cos / sqrt)</div></div>
+            <div class="ba-arr">→</div>
+            <div class="ba-box ba-after"><div class="ba-lbl">AFTER</div><div class="ba-val">fastDistanceSq (arithmetic only)</div></div>
+          </div>
+          <div class="opt-note">For finding the nearest route node, we only need to compare distances — not calculate exact values. Dropping the square root keeps the same ordering but runs about 10× faster.</div>
+        </div>
+      </div>
+
+      <div class="opt-row" style="margin-bottom:0">
+        <div class="opt-icon">⏸️</div>
+        <div style="flex:1">
+          <div class="opt-title">Zero-Motion Bypass <span style="font-family:var(--mono);font-size:11px;color:var(--text3);font-weight:400">· Stillstandserkennung</span></div>
+
+          <div class="ba">
+            <div class="ba-box ba-before"><div class="ba-lbl">BEFORE</div><div class="ba-val">Full snap computation while stopped</div></div>
+            <div class="ba-arr">→</div>
+            <div class="ba-box ba-after"><div class="ba-lbl">AFTER</div><div class="ba-val">Skip if spd ≤ 3 km/h + drift ≤ 2m</div></div>
+          </div>
+          <div class="opt-note">When a bus is stopped, we skip the entire map-matching step and reuse the previous result. Zero CPU cost — and ghost speed is completely eliminated.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ RESULTS -->
+  <div id="panel-results" class="panel">
+    <div class="slabel">What we achieved</div>
+    <div class="g2" style="margin-bottom:16px">
+      <div class="metric"><div class="m-before">10,000+</div><div class="m-arrow">↓</div><div class="m-after">&lt; 10</div><div class="m-lbl">Backlog (records)</div></div>
+      <div class="metric"><div class="m-before">&gt; 3 min</div><div class="m-arrow">↓</div><div class="m-after">&lt; 1 sec</div><div class="m-lbl">End-to-end latency</div></div>
+      <div class="metric"><div class="m-before">200×</div><div class="m-arrow">↓</div><div class="m-after">1×</div><div class="m-lbl">Redis I/O round-trips</div></div>
+      <div class="metric"><div class="m-before">1×</div><div class="m-arrow">↑</div><div class="m-after">~10×</div><div class="m-lbl">Snap search speed</div></div>
+    </div>
+    <div class="slabel">Real-world impact</div>
+    <div class="card" style="margin-bottom:12px">
+      <div style="font-size:13px;color:var(--text2);line-height:1.8">
+        The operations team was the clearest signal.<br>
+        Before — the dashboard was always running three minutes behind. They couldn't trust what they were seeing.<br>
+        After — the data was real-time. That changed how they worked day to day.
+      </div>
+    </div>
+    <div class="slabel">Key phrases for the interview</div>
+    <div class="quote">"We had 1,600 buses each sending one GPS record per second. At peak hours, the backlog reached over 10,000 unprocessed records. After the fix, it stays under 10."</div>
+    <div class="quote">"The dashboard was showing data that was three minutes old. After the changes, end-to-end latency dropped to under one second."</div>
+    <div class="quote">"We were making 200 individual Redis calls per batch — one per record. We replaced that with a single pipeline call. That's a 200-times reduction in network I/O."</div>
+    <div class="quote">"Ghost speed was a real problem — stopped buses appeared to be moving slightly. The Zero-Motion Bypass fixed that completely. If speed is under three kilometers per hour and drift is under two meters, we skip map-matching entirely and reuse the previous result."</div>
+    <div class="quote">"For finding the nearest route node, we replaced the trigonometry formula with simple arithmetic. No square root. About ten times faster, with the same result."</div>
+  </div>
+
+<!-- ⑤ INFRASTRUCTURE -->
+  <div id="panel-infra" class="panel">
+    <div class="slabel">Thread pool</div>
+    <div class="card">
+      <div class="g3" style="margin-bottom:10px">
+        <div><div class="kv"><span class="k">core-size</span><span class="v">12</span></div></div>
+        <div><div class="kv"><span class="k">max-size</span><span class="v">16</span></div></div>
+        <div><div class="kv"><span class="k">queue-capacity</span><span class="v">100</span></div></div>
+      </div>
+      <div style="font-size:13px;color:var(--text2)">Intentionally below the 20-core CPU count — this keeps context-switching low. A queue of 100 absorbs traffic spikes without dropping anything.</div>
+    </div>
+    <div class="slabel">Redis connection pool</div>
+    <div class="card">
+      <div class="g3" style="margin-bottom:10px">
+        <div><div class="kv"><span class="k">max-active</span><span class="v">40</span></div></div>
+        <div><div class="kv"><span class="k">max-idle</span><span class="v">30</span></div></div>
+        <div><div class="kv"><span class="k">share-native</span><span class="v">false</span></div></div>
+      </div>
+      <div style="font-size:13px;color:var(--text2)">40 parallel channels — no thread ever has to wait for a Redis connection. We also disabled connection sharing, which removes a bottleneck that shows up in multi-thread environments.<div style="font-size:12px;color:var(--teal);margin-top:6px;font-style:italic">Why 40? We tested 10, then 20. At 40, no bottleneck — enough headroom.</div></div>
+    </div>
+    <div class="slabel">Server scale</div>
+    <div class="card">
+      <div class="scale-row">
+        <div class="scale-item"><div class="scale-val">1,600</div><div class="scale-lbl">vehicles</div></div>
+        <div class="scale-item"><div class="scale-val">1 rec/s</div><div class="scale-lbl">per vehicle</div></div>
+        <div class="scale-item"><div class="scale-val">20-core</div><div class="scale-lbl">server</div></div>
+        <div class="scale-item"><div class="scale-val">20 GB</div><div class="scale-lbl">JVM heap</div></div>
+        <div class="scale-item"><div class="scale-val">200</div><div class="scale-lbl">batch size</div></div>
+        <div class="scale-item"><div class="scale-val">04:15</div><div class="scale-lbl">daily normalize</div></div>
+      </div>
+    </div>
+    <div class="slabel">Tech stack</div>
+    <div class="g2">
+      <div class="card">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--teal);margin-bottom:10px">CORE</div>
+        <div class="kv"><span class="k">Backend</span><span class="v">Java + Spring Boot</span></div>
+        <div class="kv"><span class="k">Messaging</span><span class="v">Redis Streams</span></div>
+        <div class="kv"><span class="k">Cache client</span><span class="v">Lettuce (async NIO)</span></div>
+        <div class="kv"><span class="k">Reference data</span><span class="v">MySQL / MariaDB</span></div>
+        <div class="kv"><span class="k">Logging</span><span class="v">Structured JSON (ELK)</span></div>
+      </div>
+      <div class="card">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--teal);margin-bottom:10px">PATTERNS</div>
+        <div class="kv"><span class="k">Queue pattern</span><span class="v">Consumer Group</span></div>
+        <div class="kv"><span class="k">Coordination</span><span class="v">Distributed Lock</span></div>
+        <div class="kv"><span class="k">I/O strategy</span><span class="v">Pipeline Batching</span></div>
+        <div class="kv"><span class="k">Poll strategy</span><span class="v">Manual single-thread</span></div>
+        <div class="kv"><span class="k">Memory</span><span class="v">Zero-Allocation</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Kyunggon Kim · Senior Backend Engineer · Relocating to Münster, Oct 2026</span>
+    <span style="font-family:var(--mono)">gps_interview_reference_en.html</span>
+  </div>
+</div>
+
+<script>
+/* ── TABS ── */
+function show(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ── TOGGLE SIM ── */
+function toggleSim(id) {
+  const el = document.getElementById('sim-' + id);
+  const opening = !el.classList.contains('open');
+  el.classList.toggle('open');
+  if (opening) {
+    if (id === 'ema') { setTimeout(initEMA, 50); }
+    if (id === 'snap') { setTimeout(() => runSnap('normal'), 50); }
+  }
+}
+
+/* ════════════════════════════════
+   EMA SIMULATION
+════════════════════════════════ */
+let emaAlpha = 0.5, emaMode = 'moving';
+let rawPts = [], emaPts = [];
+
+function initEMA() {
+  const c = document.getElementById('canvas-ema');
+  c.width = c.parentElement.offsetWidth;
+  generateEMAData();
+  drawEMA();
+}
+
+function generateEMAData() {
+  rawPts = []; emaPts = [];
+  const n = 30;
+  for (let i = 0; i < n; i++) {
+    const t = i / (n - 1);
+    const roadY = 0.42 + Math.sin(t * Math.PI * 0.9) * 0.16;
+    let noise = (Math.random() - 0.5) * (emaMode === 'stopped' ? 0.09 : 0.065);
+    if (Math.random() < 0.13) noise += (Math.random() > 0.5 ? 1 : -1) * 0.13;
+    rawPts.push({ t, y: roadY + noise, roadY });
+  }
+  let ey = rawPts[0].y;
+  for (let i = 0; i < rawPts.length; i++) {
+    ey = emaAlpha * rawPts[i].y + (1 - emaAlpha) * ey;
+    emaPts.push({ t: rawPts[i].t, y: ey });
+  }
+}
+
+function drawEMA() {
+  const c = document.getElementById('canvas-ema');
+  if (!c || !c.width) return;
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  const pad = 30;
+  ctx.clearRect(0, 0, W, H);
+
+  const px = (t, y) => ({ x: t * (W - pad * 2) + pad, y: y * H });
+
+  // road fill
+  ctx.beginPath();
+  for (let i = 0; i < rawPts.length; i++) {
+    const p = px(rawPts[i].t, rawPts[i].roadY - 0.05);
+    i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y);
+  }
+  for (let i = rawPts.length - 1; i >= 0; i--) {
+    const p = px(rawPts[i].t, rawPts[i].roadY + 0.05);
+    ctx.lineTo(p.x, p.y);
+  }
+  ctx.fillStyle = '#e5e7eb';
+  ctx.fill();
+
+  // road center dashed
+  ctx.beginPath();
+  rawPts.forEach((pt, i) => {
+    const p = px(pt.t, pt.roadY);
+    i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y);
+  });
+  ctx.strokeStyle = '#9ca3af'; ctx.lineWidth = 1.5;
+  ctx.setLineDash([6, 4]); ctx.stroke(); ctx.setLineDash([]);
+
+  // raw GPS dots
+  rawPts.forEach(pt => {
+    const p = px(pt.t, pt.y);
+    ctx.beginPath(); ctx.arc(p.x, p.y, 3.5, 0, Math.PI * 2);
+    ctx.fillStyle = '#ef4444bb'; ctx.fill();
+  });
+
+  // EMA line
+  ctx.beginPath();
+  emaPts.forEach((pt, i) => {
+    const p = px(pt.t, pt.y);
+    i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y);
+  });
+  ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 2.5; ctx.stroke();
+
+  // EMA dots
+  emaPts.forEach(pt => {
+    const p = px(pt.t, pt.y);
+    ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+    ctx.fillStyle = '#f59e0b'; ctx.fill();
+  });
+
+  // label top-left
+  ctx.font = '11px IBM Plex Mono, monospace';
+  ctx.fillStyle = '#8a90a8'; ctx.textAlign = 'left';
+  ctx.fillText('α = ' + emaAlpha.toFixed(2) + '  |  ' + emaMode, pad, 18);
+}
+
+function updateEMA() {
+  emaAlpha = document.getElementById('ema-alpha').value / 100;
+  document.getElementById('ema-alpha-val').textContent = emaAlpha.toFixed(2);
+  generateEMAData(); drawEMA();
+  const cap = document.getElementById('ema-caption');
+  if (emaAlpha >= 0.3) {
+    cap.innerHTML = '<strong>Moving · alpha = ' + emaAlpha.toFixed(2) + '</strong> — High alpha: we trust the current GPS reading more. The smoothed path tracks closely and removes sharp spikes.';
+  } else {
+    cap.innerHTML = '<strong>Stopped · alpha = ' + emaAlpha.toFixed(2) + '</strong> — Low alpha: the historical average dominates. Even if GPS drifts several meters, the output barely moves — perfect for a parked bus.';
+  }
+}
+
+function setEMAMode(mode) {
+  emaMode = mode;
+  const v = mode === 'moving' ? 50 : 5;
+  document.getElementById('ema-alpha').value = v;
+  emaAlpha = v / 100;
+  document.getElementById('ema-alpha-val').textContent = emaAlpha.toFixed(2);
+  generateEMAData(); drawEMA(); updateEMA();
+}
+function resetEMA() { setEMAMode('moving'); }
+
+/* ════════════════════════════════
+   SNAP SIMULATION
+════════════════════════════════ */
+let snapRAF = null, snapScenario = 'normal', snapTick = 0;
+
+function runSnap(scenario) {
+  snapScenario = scenario;
+  if (snapRAF) cancelAnimationFrame(snapRAF);
+  snapTick = 0;
+  const c = document.getElementById('canvas-snap');
+  c.width = c.parentElement.offsetWidth;
+  const captions = {
+    normal: '<strong>Normal Snap</strong> — Raw GPS is off the route. The engine finds the nearest route segment and snaps the coordinate onto it. Heading and distance checks pass → snap succeeds.',
+    fallback: '<strong>Fallback to Mode A</strong> — Heading difference is over 80°. The bus turned a corner but the snap would land on the wrong segment. Snap is abandoned — Mode A takes over.',
+    bypass: '<strong>Zero-Motion Bypass</strong> — Speed ≤ 3 km/h and GPS drift ≤ 2 m. The bus is stopped. We skip the entire snap computation and reuse the previous coordinates. Ghost speed is eliminated.'
+  };
+  document.getElementById('snap-caption').innerHTML = captions[scenario];
+  animSnap();
+}
+
+function animSnap() {
+  const c = document.getElementById('canvas-snap');
+  drawSnap(c, snapScenario, snapTick);
+  snapTick++;
+  if (snapTick < 120 || snapScenario === 'bypass') {
+    snapRAF = requestAnimationFrame(animSnap);
+  } else {
+    // hold final frame
+    snapRAF = null;
+  }
+}
+
+function drawSnap(c, scenario, tick) {
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const routeY = H * 0.5;
+  const rL = W * 0.06, rR = W * 0.94;
+
+  // road
+  ctx.fillStyle = '#e5e7eb';
+  ctx.fillRect(rL, routeY - 16, rR - rL, 32);
+
+  // route center
+  ctx.beginPath(); ctx.moveTo(rL, routeY); ctx.lineTo(rR, routeY);
+  ctx.strokeStyle = '#0d9488'; ctx.lineWidth = 2;
+  ctx.setLineDash([7, 5]); ctx.stroke(); ctx.setLineDash([]);
+
+  // bus stops
+  [W*0.22, W*0.5, W*0.78].forEach(sx => {
+    ctx.beginPath(); ctx.arc(sx, routeY, 7, 0, Math.PI * 2);
+    ctx.fillStyle = '#ccfbf1'; ctx.fill();
+    ctx.strokeStyle = '#0d9488'; ctx.lineWidth = 1.5; ctx.stroke();
+  });
+
+  if (scenario === 'bypass') {
+    const bx = W * 0.45, by = routeY + 4;
+    // bus nearly on route
+    ctx.font = '26px serif'; ctx.textAlign = 'center';
+    ctx.fillText('🚌', bx, by - 14);
+    // raw GPS wobble
+    const wx = bx + Math.sin(tick * 0.3) * 4;
+    const wy = by + Math.cos(tick * 0.4) * 3;
+    ctx.beginPath(); ctx.arc(wx, wy, 5, 0, Math.PI * 2);
+    ctx.fillStyle = '#ef444488'; ctx.fill();
+
+    // SKIP badge
+    ctx.fillStyle = '#fef9c3'; ctx.strokeStyle = '#fcd34d'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.roundRect(bx - 66, by - 62, 132, 30, 5); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#b45309'; ctx.font = 'bold 11px IBM Plex Mono, monospace'; ctx.textAlign = 'center';
+    ctx.fillText('⏸ SNAP COMPUTATION SKIPPED', bx, by - 42);
+
+    // reuse annotation
+    const sx = W * 0.45;
+    ctx.beginPath(); ctx.arc(sx, routeY, 8, 0, Math.PI * 2);
+    ctx.strokeStyle = '#1d4ed8'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#1d4ed8'; ctx.font = '10px IBM Plex Mono, monospace'; ctx.textAlign = 'center';
+    ctx.fillText('prev snap reused ✓', sx, routeY + 24);
+    ctx.fillStyle = '#4a5070'; ctx.font = '10px IBM Plex Mono, monospace';
+    ctx.fillText('spd ≤ 3 km/h  |  drift ≤ 2 m', bx, routeY + 42);
+    return;
+  }
+
+  const rawX = scenario === 'normal' ? W * 0.45 : W * 0.62;
+  const rawY = scenario === 'normal' ? routeY - 64 : routeY + 72;
+  const snapX = rawX;
+  const snapY = scenario === 'fallback' ? routeY + 28 : routeY;
+
+  const dur = 72;
+  const t = Math.min(tick / dur, 1);
+  const ease = t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
+
+  // raw dot
+  ctx.beginPath(); ctx.arc(rawX, rawY, 7, 0, Math.PI * 2);
+  ctx.fillStyle = '#ef4444'; ctx.fill();
+  ctx.font = '10px IBM Plex Mono, monospace'; ctx.fillStyle = '#ef4444'; ctx.textAlign = 'center';
+  ctx.fillText('raw GPS', rawX, rawY + (scenario === 'normal' ? -14 : 20));
+
+  if (t > 0) {
+    const cx = rawX + (snapX - rawX) * ease;
+    const cy = rawY + (snapY - rawY) * ease;
+    // animated line
+    ctx.beginPath(); ctx.moveTo(rawX, rawY); ctx.lineTo(cx, cy);
+    ctx.strokeStyle = scenario === 'fallback' ? '#f59e0b' : '#1d4ed8';
+    ctx.lineWidth = 2; ctx.setLineDash([4,3]); ctx.stroke(); ctx.setLineDash([]);
+
+    if (t >= 1) {
+      const col = scenario === 'fallback' ? '#f59e0b' : '#1d4ed8';
+      ctx.beginPath(); ctx.arc(snapX, snapY, 8, 0, Math.PI * 2);
+      ctx.fillStyle = col; ctx.fill();
+      ctx.font = '10px IBM Plex Mono, monospace'; ctx.fillStyle = col; ctx.textAlign = 'center';
+      const lbl = scenario === 'fallback' ? 'Mode A (EMA) ▶' : 'snapped ✓';
+      ctx.fillText(lbl, snapX, snapY + (scenario === 'normal' ? 22 : -16));
+
+      if (scenario === 'fallback') {
+        ctx.fillStyle = '#fffbeb'; ctx.strokeStyle = '#fcd34d'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.roundRect(snapX - 68, snapY + 20, 136, 26, 4); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#b45309'; ctx.font = 'bold 10px IBM Plex Mono, monospace'; ctx.textAlign = 'center';
+        ctx.fillText('⚠ heading diff > 80° → fallback', snapX, snapY + 37);
+      } else {
+        // distance guide
+        ctx.save();
+        ctx.strokeStyle = '#d1d5db'; ctx.lineWidth = 1; ctx.setLineDash([3,3]);
+        ctx.beginPath(); ctx.moveTo(rawX + 12, rawY); ctx.lineTo(snapX + 12, snapY);
+        ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle = '#9ca3af'; ctx.font = '10px IBM Plex Mono, monospace'; ctx.textAlign = 'left';
+        ctx.fillText('dist < 100m ✓', snapX + 15, (rawY+snapY)/2 + 4);
+        ctx.restore();
+      }
+    }
+  }
+}
+
+/* ════════════════════════════════
+   PIPELINE SIMULATION
+════════════════════════════════ */
+let pipeRAF = null, pipeTick = 0, pipeMode = null;
+
+function runPipeline(mode) {
+  if (pipeRAF) { cancelAnimationFrame(pipeRAF); pipeRAF = null; }
+  pipeMode = mode; pipeTick = 0;
+  const c = document.getElementById('canvas-pipeline');
+  c.width = c.parentElement.offsetWidth;
+
+  const captions = {
+    before: '<strong>Before</strong> — Each of the 200 commands travels separately. Every round-trip adds latency. Total: around 200ms just for I/O, before any processing.',
+    after: '<strong>After — pipeline batching</strong> — All 200 commands are bundled into one network write. Redis processes them in order and replies once. Result: 200× fewer round-trips.'
+  };
+  document.getElementById('pipeline-caption').innerHTML = captions[mode];
+  animPipe();
+}
+
+function animPipe() {
+  const c = document.getElementById('canvas-pipeline');
+  drawPipeline(c, pipeMode, pipeTick);
+  pipeTick++;
+  pipeRAF = requestAnimationFrame(animPipe); // loop
+}
+
+function drawPipeline(c, mode, tick) {
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const appX = W * 0.14, redisX = W * 0.80, midY = H * 0.5;
+  const startX = appX + 46, endX = redisX - 40;
+  const laneW = endX - startX;
+
+  // Spring Boot box
+  ctx.fillStyle = '#eff6ff'; ctx.strokeStyle = '#93c5fd'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.roundRect(appX-46, midY-30, 92, 60, 7); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#1d4ed8'; ctx.font = 'bold 12px IBM Plex Sans, sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('Spring Boot', appX, midY - 8);
+  ctx.fillStyle = '#4a5070'; ctx.font = '10px IBM Plex Mono, monospace';
+  ctx.fillText('200 records', appX, midY + 10);
+
+  // Redis box
+  ctx.fillStyle = '#fef2f2'; ctx.strokeStyle = '#fca5a5'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.roundRect(redisX-40, midY-30, 80, 60, 7); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#dc2626'; ctx.font = 'bold 12px IBM Plex Sans, sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('Redis', redisX, midY - 8);
+  ctx.fillStyle = '#4a5070'; ctx.font = '10px IBM Plex Mono, monospace';
+  ctx.fillText('SET cache', redisX, midY + 10);
+
+  if (mode === 'before') {
+    // multiple packets flying individually
+    const speed = 2.2;
+    for (let i = 0; i < 8; i++) {
+      const phase = ((tick * speed + i * 38) % (laneW * 2));
+      let px, py;
+      if (phase < laneW) { px = startX + phase; py = midY - 12 - i * 2.5; }
+      else { px = endX - (phase - laneW); py = midY + 12 + i * 2.5; }
+      px = Math.max(startX, Math.min(endX, px));
+      const alpha = 0.5 + 0.4 * Math.sin(tick * 0.08 + i * 1.1);
+      ctx.beginPath(); ctx.arc(px, py, 4.5, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(239,68,68,${alpha})`; ctx.fill();
+    }
+    // counter
+    const trips = Math.min(200, Math.floor(tick * 1.4) % 201);
+    ctx.font = 'bold 15px IBM Plex Mono, monospace'; ctx.fillStyle = '#dc2626'; ctx.textAlign = 'center';
+    ctx.fillText('round-trips: ' + trips + ' / 200', W/2, H - 18);
+    ctx.font = '10px IBM Plex Mono, monospace'; ctx.fillStyle = '#9ca3af';
+    ctx.fillText('each command travels separately', W/2, midY - 48);
+
+  } else {
+    // one big bundle
+    const cycleDur = 100;
+    const ct = (tick % cycleDur) / cycleDur;
+    const ease = ct < 0.5 ? 2*ct*ct : -1+(4-2*ct)*ct;
+    const bx = startX + ease * laneW;
+
+    if (ct < 0.88) {
+      ctx.fillStyle = '#0d9488';
+      ctx.beginPath(); ctx.roundRect(bx - 28, midY - 11, 56, 22, 5); ctx.fill();
+      ctx.fillStyle = '#ffffff'; ctx.font = 'bold 9px IBM Plex Mono, monospace'; ctx.textAlign = 'center';
+      ctx.fillText('200 cmds', bx, midY + 4);
+    } else {
+      // flash at Redis
+      const flash = 1 - (ct - 0.88) / 0.12;
+      ctx.fillStyle = `rgba(13,148,136,${flash * 0.35})`;
+      ctx.beginPath(); ctx.arc(redisX, midY, 44, 0, Math.PI * 2); ctx.fill();
+    }
+
+    ctx.font = 'bold 15px IBM Plex Mono, monospace'; ctx.fillStyle = '#0d9488'; ctx.textAlign = 'center';
+    ctx.fillText('round-trips: 1 ✓', W/2, H - 18);
+    ctx.font = '10px IBM Plex Mono, monospace'; ctx.fillStyle = '#9ca3af';
+    ctx.fillText('all 200 commands bundled in a single write', W/2, midY - 48);
+  }
+}
+
+window.addEventListener('resize', () => {
+  if (document.getElementById('sim-ema').classList.contains('open')) initEMA();
+  if (document.getElementById('sim-snap').classList.contains('open')) runSnap(snapScenario);
+  if (document.getElementById('sim-pipeline').classList.contains('open') && pipeMode) runPipeline(pipeMode);
+});
+</script>
+</body>
+</html>
